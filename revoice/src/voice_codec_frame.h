@@ -1,5 +1,8 @@
 #pragma once
 
+#include "IVoiceCodec.h"
+#include "iframeencoder.h"
+
 /* <19b1> ../engine/voice_codecs/speex/../frame_encoder/voice_codec_frame.cpp:18 */
 class VoiceCodec_Frame: public IVoiceCodec {
 public:

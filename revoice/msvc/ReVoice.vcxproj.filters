@@ -90,6 +90,9 @@
     <ClInclude Include="..\src\VoiceEncoder_Speex.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\revoice_main.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -132,6 +135,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\VoiceEncoder_Speex.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\revoice_player.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\revoice_main.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

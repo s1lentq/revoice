@@ -5,7 +5,7 @@
 #include "speex.h"
 
 /* <61c> ../engine/voice_codecs/speex/VoiceEncoder_Speex.h:57 */
-class VoiceEncoder_Speex: IFrameEncoder {
+class VoiceEncoder_Speex: public IFrameEncoder {
 protected:
 	virtual ~VoiceEncoder_Speex();
 

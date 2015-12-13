@@ -51,7 +51,7 @@ static DLL_FUNCTIONS gFunctionTable =
 	NULL,					// pfnRestoreGlobalState
 	NULL,					// pfnResetGlobalState
 
-	NULL,					// pfnClientConnect
+	&mm_ClientConnect,
 	NULL,					// pfnClientDisconnect
 	NULL,					// pfnClientKill
 	NULL,					// pfnClientPutInServer
@@ -95,6 +95,15 @@ static DLL_FUNCTIONS gFunctionTable =
 	NULL,					// pfnAllowLagCompensation
 };
 
+static NEW_DLL_FUNCTIONS gNewFunctionTable = {
+	NULL, //pfnOnFreeEntPrivateData
+	NULL, //pfnGameShutdown
+	NULL, //pfnShouldCollide
+	NULL, //pfnCvarValue
+	&mm_CvarValue2, //pfnCvarValue2
+};
+
+
 C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
 	if(!pFunctionTable) {
@@ -108,5 +117,20 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 		return(FALSE);
 	}
 	memcpy(pFunctionTable, &gFunctionTable, sizeof(DLL_FUNCTIONS));
+	return(TRUE);
+}
+
+C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion) {
+	if (!pNewFunctionTable) {
+		UTIL_LogPrintf("GetNewDLLFunctions called with null pNewFunctionTable");
+		return(FALSE);
+	}
+	else if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION) {
+		UTIL_LogPrintf("GetNewDLLFunctions version mismatch; requested=%d ours=%d", *interfaceVersion, NEW_DLL_FUNCTIONS_VERSION);
+		//! Tell metamod what version we had, so it can figure out who is out of date.
+		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
+		return(FALSE);
+	}
+	memcpy(pNewFunctionTable, &gNewFunctionTable, sizeof(NEW_DLL_FUNCTIONS));
 	return(TRUE);
 }

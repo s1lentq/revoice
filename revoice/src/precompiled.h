@@ -1,3 +1,5 @@
+#pragma once
+
 #include "osconf.h"
 #include "sys_shared.h"
 #include "crc32c.h"
@@ -19,6 +21,8 @@
 #include "VoiceEncoder_Silk.h"
 #include "VoiceEncoder_Speex.h"
 #include "voice_codec_frame.h"
+#include "revoice_player.h"
+#include "revoice_main.h"
 
 #include "interface.h"
 #include "utlbuffer.h"
