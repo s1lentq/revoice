@@ -61,6 +61,9 @@
     <ProjectReference Include="..\..\dep\silk\msvc\Silk.vcxproj">
       <Project>{e1ac990e-c012-4167-80c2-84c98aa7070c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\dep\speex\msvc\Speex.vcxproj">
+      <Project>{966de7a9-ec15-4c1d-8b46-ea813a845723}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DAEFE371-7D77-4B72-A8A5-3CD3D1A55786}</ProjectGuid>
