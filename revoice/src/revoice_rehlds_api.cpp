@@ -4,6 +4,7 @@ IRehldsApi* g_RehldsApi;
 const RehldsFuncs_t* g_RehldsFuncs;
 IRehldsHookchains* g_RehldsHookchains;
 IRehldsServerStatic* g_RehldsSvs;
+IRehldsServerData* g_RehldsSv;
 
 bool Revoice_RehldsApi_TryInit(CSysModule* engineModule, char* failureReason)
 {
@@ -41,6 +42,7 @@ bool Revoice_RehldsApi_TryInit(CSysModule* engineModule, char* failureReason)
 	g_RehldsFuncs = g_RehldsApi->GetFuncs();
 	g_RehldsHookchains = g_RehldsApi->GetHookchains();
 	g_RehldsSvs = g_RehldsApi->GetServerStatic();
+	g_RehldsSv = g_RehldsApi->GetServerData();
 
 	return true;
 }

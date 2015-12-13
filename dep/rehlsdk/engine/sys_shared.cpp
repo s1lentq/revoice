@@ -42,9 +42,7 @@ cpuinfo_t cpuinfo;
 
 void Sys_CheckCpuInstructionsSupport(void)
 {
-	int cpuid_data[4];
-
-	cpuid_ex(cpuid_data, 1, 0);
+	int cpuid_data[4] = { 0,0,0,0 };
 
 	cpuinfo.sse3 = (cpuid_data[2] & SSE3_FLAG) ? 1 : 0; // ecx
 	cpuinfo.ssse3 = (cpuid_data[2] & SSSE3_FLAG) ? 1 : 0;
@@ -52,7 +50,6 @@ void Sys_CheckCpuInstructionsSupport(void)
 	cpuinfo.sse4_2 = (cpuid_data[2] & SSE4_2_FLAG) ? 1 : 0;
 	cpuinfo.avx = (cpuid_data[2] & AVX_FLAG) ? 1 : 0;
 
-	cpuid_ex(cpuid_data, 7, 0);
 
 	cpuinfo.avx2 = (cpuid_data[1] & AVX2_FLAG) ? 1 : 0; // ebx
 }

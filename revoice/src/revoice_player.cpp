@@ -28,7 +28,12 @@ void CRevoicePlayer::InitVoice(revoice_codec_type codecType) {
 void CRevoicePlayer::OnConnected(int protocol) {
 	m_Protocol = protocol;
 	m_CodecType = vct_none;
-}	
+}
+
+void CRevoicePlayer::OnDisconected() {
+	m_Protocol = 0;
+	m_CodecType = vct_none;
+}
 
 void Revoice_Init_Players() {
 	int maxclients = g_RehldsSvs->GetMaxClients();

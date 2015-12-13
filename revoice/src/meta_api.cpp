@@ -121,6 +121,11 @@ bool Revoice_Load() {
 		return false;
 	}
 
+	Revoice_Init_Players();
+	if (!Revoice_Main_Init()) {
+		LCPrintf(true, "Initialization failed\n");
+		return false;
+	}
 
 	return true;
 }

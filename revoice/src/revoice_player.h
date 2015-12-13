@@ -17,9 +17,14 @@ public:
 	CRevoicePlayer();
 	void Initialize(IGameClient* cl);
 	void OnConnected(int protocol);
+	void OnDisconected();
 	void InitVoice(revoice_codec_type codecType);
 	
-
+	int GetProtocol() const { return m_Protocol; }
+	revoice_codec_type GetCodecType() const { return m_CodecType; }
+	VoiceEncoder_Silk* GetSilkCodec() const { return m_SilkCodec;  }
+	VoiceCodec_Frame* GetSpeexCodec() const { return m_SpeexCodec;  }
+	IGameClient* GetClient() const { return m_RehldsClient; }
 };
 
 extern CRevoicePlayer g_Players[MAX_PLAYERS];
