@@ -1,20 +1,15 @@
 
 #include "precompiled.h"
 
-int g_ClientBeingConnected_Protocol = 0;
 cvar_t* pcv_sv_voiceenable = NULL;
 
-void SV_ConnectClient_hook(IRehldsHook_SV_ConnectClient* chain) {
-	g_ClientBeingConnected_Protocol = atoi(g_engfuncs.pfnCmd_Argv(1));
-	chain->callNext();
-}
-
 void Rehlds_ClientConnected_Hook(IRehldsHook_ClientConnected* chain, IGameClient* cl) {
-	if (g_ClientBeingConnected_Protocol >= 47 && g_ClientBeingConnected_Protocol <= 48) {
+	int protocol = g_ReunionApi->GetClientProtocol(cl->GetId());
+	if (protocol >= 47 && protocol <= 48) {
 		CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
-		plr->OnConnected(g_ClientBeingConnected_Protocol);
+		plr->OnConnected(protocol);
 
-		if (g_ClientBeingConnected_Protocol == 47) {
+		if (protocol == 47) {
 			plr->InitVoice(vct_speex);
 		}
 
@@ -30,12 +25,12 @@ void SV_DropClient_hook(IRehldsHook_SV_DropClient* chain, IGameClient* cl, bool 
 	chain->callNext(cl, crash, msg);
 }
 
-void mm_CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName, const char *value) {
+void mm_CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName, const char *cvarValue) {
 	if (!strcmp("sv_version", cvarName)) {
 		// ] sv_version
 		// "sv_version" is "1.1.2.1/2.0.0.0,48,4554"
 
-		const char* lastSeparator = strrchr(cvarName, ',');
+		const char* lastSeparator = strrchr(cvarValue, ',');
 		int buildNumber = 0;
 		if (lastSeparator) {
 			buildNumber = atoi(lastSeparator + 1);
@@ -63,9 +58,12 @@ int TranscodeVoice(const char* srcBuf, int srcBufLen, IVoiceCodec* srcCodec, IVo
 }
 
 void SV_ParseVoiceData_emu(IGameClient* cl) {
+	if (pcv_sv_voiceenable->value == 0.0f)
+		return;
+
 	char chReceived[4096];
 	unsigned int nDataLength = g_RehldsFuncs->MSG_ReadShort();
-	
+
 	if (nDataLength > sizeof(chReceived))
 	{
 		g_RehldsFuncs->DropClient(cl, FALSE, "Invalid voice data\n");
@@ -74,9 +72,6 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 
 	g_RehldsFuncs->MSG_ReadBuf(nDataLength, chReceived);
 	//cl->m_lastvoicetime = g_RehldsSv->GetTime();
-
-	if (pcv_sv_voiceenable->value == 0.0f)
-		return;
 
 	CRevoicePlayer* srcPlayer = GetPlayerByClientPtr(cl);
 	if (srcPlayer->GetCodecType() == vct_none) {
@@ -108,7 +103,7 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 		CRevoicePlayer* dstPlayer = &g_Players[i];
 		IGameClient* dstClient = dstPlayer->GetClient();
 
-		if (!((1 << (i & 0x1F)) & cl->GetVoiceStreams(i >> 5)) && i != cl->GetId())
+		if (!((1 << (i & 0x1F)) & cl->GetVoiceStream(i >> 5)) && i != cl->GetId())
 			continue;
 
 		if (!dstClient->IsActive() && !dstClient->IsConnected() && i != cl->GetId())
@@ -162,7 +157,7 @@ qboolean mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *psz
 	if (plr->GetProtocol() == 48) {
 		g_engfuncs.pfnQueryClientCvarValue2(pEntity, "sv_version", 0);
 	}
-	RETURN_META_VALUE(MRES_IGNORED, 1);
+	RETURN_META_VALUE(MRES_IGNORED, TRUE);
 }
 
 void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t* sb) {
@@ -189,7 +184,6 @@ void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t*
 }
 
 bool Revoice_Main_Init() {
-	g_RehldsHookchains->SV_ConnectClient()->registerHook(SV_ConnectClient_hook);
 	g_RehldsHookchains->ClientConnected()->registerHook(Rehlds_ClientConnected_Hook);
 	g_RehldsHookchains->SV_DropClient()->registerHook(SV_DropClient_hook);
 	g_RehldsHookchains->HandleNetCommand()->registerHook(Rehlds_HandleNetCommand);

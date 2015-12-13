@@ -121,6 +121,9 @@ bool Revoice_Load() {
 		return false;
 	}
 
+	if (!Revoice_ReunionApi_Init())
+		return false;
+
 	Revoice_Init_Players();
 	if (!Revoice_Main_Init()) {
 		LCPrintf(true, "Initialization failed\n");

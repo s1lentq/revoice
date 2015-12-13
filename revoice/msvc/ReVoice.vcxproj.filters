@@ -93,6 +93,12 @@
     <ClInclude Include="..\src\revoice_main.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\reunion_api.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\revoice_reunion_api.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -141,6 +147,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\revoice_main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\revoice_reunion_api.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
