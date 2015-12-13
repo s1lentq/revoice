@@ -67,6 +67,9 @@ public:
 	virtual bool IsConnected() = 0;
 	virtual void SetConnected(bool connected) = 0;
 
+	virtual uint32 GetVoiceStreams(int id) = 0;
+	virtual double GetLastVoiceTime() = 0;
+	virtual bool GetLoopback() = 0;
 
 	// this must be the last virtual function in class
 #ifdef REHLDS_SELF
@@ -113,4 +116,10 @@ public:
 	virtual sizebuf_t* GetReliableDatagram() = 0;
 
 	virtual void SetModelName(const char* modelname) = 0;
+	virtual void SetConsistencyNum(int num) = 0;
+	virtual int GetConsistencyNum() = 0;
+	virtual int GetResourcesNum() = 0;
+	virtual int GetDecalNameNum() = 0;
+
+	virtual double GetTime() = 0;
 };

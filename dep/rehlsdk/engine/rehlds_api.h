@@ -35,7 +35,7 @@
 #include "model.h"
 
 #define REHLDS_API_VERSION_MAJOR 2
-#define REHLDS_API_VERSION_MINOR 2
+#define REHLDS_API_VERSION_MINOR 3
 
 //Steam_NotifyClientConnect hook
 typedef IHookChain<qboolean, IGameClient*, const void*, unsigned int> IRehldsHook_Steam_NotifyClientConnect;
@@ -141,9 +141,21 @@ typedef IVoidHookChainRegistry<edict_t *, int, const char *, float, float, int, 
 typedef IVoidHookChain<IGameClient *, char *, size_t, sizebuf_t *, IGameClient *> IRehldsHook_SV_WriteFullClientUpdate;
 typedef IVoidHookChainRegistry<IGameClient *, char *, size_t, sizebuf_t *, IGameClient *> IRehldsHookRegistry_SV_WriteFullClientUpdate;
 
-//SV_GenericFileConsistencyResponce hook
-typedef IVoidHookChain<IGameClient *, resource_t *, uint32> IRehldsHook_GenericFileConsistencyResponce;
-typedef IVoidHookChainRegistry<IGameClient *, resource_t *, uint32> IRehldsHookRegistry_GenericFileConsistencyResponce;
+//SV_CheckConsistencyResponse hook
+typedef IHookChain<bool, IGameClient *, resource_t *, uint32> IRehldsHook_SV_CheckConsistencyResponse;
+typedef IHookChainRegistry<bool, IGameClient *, resource_t *, uint32> IRehldsHookRegistry_SV_CheckConsistencyResponse;
+
+//SV_DropClient hook
+typedef IVoidHookChain<IGameClient*, bool, const char*> IRehldsHook_SV_DropClient;
+typedef IVoidHookChainRegistry<IGameClient*, bool, const char*> IRehldsHookRegistry_SV_DropClient;
+
+//SV_ActivateServer hook
+typedef IVoidHookChain<int> IRehldsHook_SV_ActivateServer;
+typedef IVoidHookChainRegistry<int> IRehldsHookRegistry_SV_ActivateServer;
+
+//SV_WriteVoiceCodec hook
+typedef IVoidHookChain<sizebuf_t *> IRehldsHook_SV_WriteVoiceCodec;
+typedef IVoidHookChainRegistry<sizebuf_t *> IRehldsHookRegistry_SV_WriteVoiceCodec;
 
 class IRehldsHookchains {
 public:
@@ -175,7 +187,10 @@ public:
 	virtual IRehldsHookRegistry_PF_Remove_I* PF_Remove_I() = 0;
 	virtual IRehldsHookRegistry_PF_BuildSoundMsg_I* PF_BuildSoundMsg_I() = 0;
 	virtual IRehldsHookRegistry_SV_WriteFullClientUpdate* SV_WriteFullClientUpdate() = 0;
-	virtual IRehldsHookRegistry_GenericFileConsistencyResponce* GenericFileConsistencyResponce() = 0;
+	virtual IRehldsHookRegistry_SV_CheckConsistencyResponse* SV_CheckConsistencyResponse() = 0;
+	virtual IRehldsHookRegistry_SV_DropClient* SV_DropClient() = 0;
+	virtual IRehldsHookRegistry_SV_ActivateServer* SV_ActivateServer() = 0;
+	virtual IRehldsHookRegistry_SV_WriteVoiceCodec* SV_WriteVoiceCodec() = 0;
 };
 
 struct RehldsFuncs_t {
@@ -211,6 +226,13 @@ struct RehldsFuncs_t {
 	void*(*SZ_GetSpace)(sizebuf_t *buf, int length);
 	cvar_t*(*GetCvarVars)();
 	int (*SV_GetChallenge)(const netadr_t& adr);
+	void (*SV_AddResource)(resourcetype_t type, const char *name, int size, unsigned char flags, int index);
+	int(*MSG_ReadShort)(void);
+	int(*MSG_ReadBuf)(int iSize, void *pbuf);
+	void(*MSG_WriteBuf)(sizebuf_t *sb, int iSize, void *buf);
+	void(*MSG_WriteByte)(sizebuf_t *sb, int c);
+	void(*MSG_WriteShort)(sizebuf_t *sb, int c);
+	void(*MSG_WriteString)(sizebuf_t *sb, const char *s);
 };
 
 class IRehldsApi {

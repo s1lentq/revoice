@@ -28,8 +28,13 @@
 #pragma once
 
 #include "const.h"
+#include "qlimits.h"
 
+#ifdef REHLDS_FIXES
+#define COM_TOKEN_LEN	2048
+#else
 #define COM_TOKEN_LEN	1024
+#endif
 
 // Don't allow overflow
 #define SIZEBUF_CHECK_OVERFLOW	0
