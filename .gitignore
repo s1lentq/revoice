@@ -13,9 +13,6 @@
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -26,3 +23,21 @@
 *.exe
 *.out
 *.app
+
+# MSVS user-scoped config files
+*.user
+
+# MSVS internal
+*.sdf
+*.opensdf
+*.suo
+
+msvc/ipch
+msvc/Debug
+msvc/Release
+
+dep/silk/msvc/Debug
+dep/silk/msvc/Release
+
+revoice/msvc/Debug
+revoice/msvc/Release

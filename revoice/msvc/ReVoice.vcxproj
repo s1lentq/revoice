@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\dllapi.h" />
+    <ClInclude Include="..\include\enginecallbacks.h" />
+    <ClInclude Include="..\include\engine_api.h" />
+    <ClInclude Include="..\include\h_export.h" />
+    <ClInclude Include="..\include\log_meta.h" />
+    <ClInclude Include="..\include\meta_api.h" />
+    <ClInclude Include="..\include\mhook.h" />
+    <ClInclude Include="..\include\mreg.h" />
+    <ClInclude Include="..\include\mutil.h" />
+    <ClInclude Include="..\include\osdep.h" />
+    <ClInclude Include="..\include\plinfo.h" />
+    <ClInclude Include="..\include\sdk_util.h" />
+    <ClInclude Include="..\include\types_meta.h" />
+    <ClInclude Include="..\public\IVoiceCodec.h" />
+    <ClInclude Include="..\public\utlbuffer.h" />
+    <ClInclude Include="..\public\utlmemory.h" />
+    <ClInclude Include="..\src\osconf.h" />
+    <ClInclude Include="..\src\precompiled.h" />
+    <ClInclude Include="..\src\revoice_cfg.h" />
+    <ClInclude Include="..\src\revoice_player.h" />
+    <ClInclude Include="..\src\revoice_rehlds_api.h" />
+    <ClInclude Include="..\src\revoice_shared.h" />
+    <ClInclude Include="..\src\VoiceEncoder_Silk.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\public\utlbuffer.cpp" />
+    <ClCompile Include="..\src\dllapi.cpp" />
+    <ClCompile Include="..\src\engine_api.cpp" />
+    <ClCompile Include="..\src\h_export.cpp" />
+    <ClCompile Include="..\src\meta_api.cpp" />
+    <ClCompile Include="..\src\precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\src\public_amalgamation.cpp" />
+    <ClCompile Include="..\src\revoice_cfg.cpp" />
+    <ClCompile Include="..\src\revoice_rehlds_api.cpp" />
+    <ClCompile Include="..\src\revoice_utils.cpp" />
+    <ClCompile Include="..\src\sdk_util.cpp" />
+    <ClCompile Include="..\src\VoiceEncoder_Silk.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\dep\silk\msvc\Silk.vcxproj">
+      <Project>{e1ac990e-c012-4167-80c2-84c98aa7070c}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DAEFE371-7D77-4B72-A8A5-3CD3D1A55786}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ReVoice</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>revoice_mm</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>revoice_mm</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;REVOICE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>revoice.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;REVOICE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>revoice.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
