@@ -1,43 +1,15 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+**/build
+**/.gradle
+.idea
+*.iml
+**/msvc/Debug*
+**/msvc/Release*
+**/msvc/*.sdf
+**/msvc/*.opensdf
+**/msvc/*.user
+**/msvc/*.suo
+**/msvc/*.aps
+**/msvc/ipch
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# MSVS user-scoped config files
-*.user
-
-# MSVS internal
-*.sdf
-*.opensdf
-*.suo
-
-msvc/ipch
-msvc/Debug
-msvc/Release
-
-dep/silk/msvc/Debug
-dep/silk/msvc/Release
-
-revoice/msvc/Debug
-revoice/msvc/Release
+publish
+**/appversion.h

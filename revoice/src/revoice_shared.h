@@ -23,6 +23,21 @@ enum revoice_codec_type {
 	vct_speex,
 };
 
+template <typename T>
+T _min(T a, T b) {
+	return (a < b) ? a : b;
+}
+
+template <typename T>
+T _max(T a, T b) {
+	return (a < b) ? b : a;
+}
+
+template <typename T>
+T clamp(T a, T min, T max) {
+	return (a > max) ? max : (a < min) ? min : a;
+}
+
 extern char* trimbuf(char *str);
 extern void LCPrintf(bool critical, const char *fmt, ...);
 

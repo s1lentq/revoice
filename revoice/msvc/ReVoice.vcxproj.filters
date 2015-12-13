@@ -81,6 +81,15 @@
     <ClInclude Include="..\src\revoice_player.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\iframeencoder.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\voice_codec_frame.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VoiceEncoder_Speex.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -117,6 +126,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\VoiceEncoder_Silk.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\voice_codec_frame.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VoiceEncoder_Speex.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

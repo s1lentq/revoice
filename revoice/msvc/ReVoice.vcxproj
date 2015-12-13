@@ -27,6 +27,7 @@
     <ClInclude Include="..\public\IVoiceCodec.h" />
     <ClInclude Include="..\public\utlbuffer.h" />
     <ClInclude Include="..\public\utlmemory.h" />
+    <ClInclude Include="..\src\iframeencoder.h" />
     <ClInclude Include="..\src\osconf.h" />
     <ClInclude Include="..\src\precompiled.h" />
     <ClInclude Include="..\src\revoice_cfg.h" />
@@ -34,6 +35,8 @@
     <ClInclude Include="..\src\revoice_rehlds_api.h" />
     <ClInclude Include="..\src\revoice_shared.h" />
     <ClInclude Include="..\src\VoiceEncoder_Silk.h" />
+    <ClInclude Include="..\src\VoiceEncoder_Speex.h" />
+    <ClInclude Include="..\src\voice_codec_frame.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\public\utlbuffer.cpp" />
@@ -51,6 +54,8 @@
     <ClCompile Include="..\src\revoice_utils.cpp" />
     <ClCompile Include="..\src\sdk_util.cpp" />
     <ClCompile Include="..\src\VoiceEncoder_Silk.cpp" />
+    <ClCompile Include="..\src\VoiceEncoder_Speex.cpp" />
+    <ClCompile Include="..\src\voice_codec_frame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dep\silk\msvc\Silk.vcxproj">
@@ -100,7 +105,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;REVOICE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/speex/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -118,7 +123,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;REVOICE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/speex/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -126,7 +131,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)\speex.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>revoice.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>

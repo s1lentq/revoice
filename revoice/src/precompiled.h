@@ -17,6 +17,8 @@
 #include "revoice_cfg.h"
 #include "revoice_rehlds_api.h"
 #include "VoiceEncoder_Silk.h"
+#include "VoiceEncoder_Speex.h"
+#include "voice_codec_frame.h"
 
 #include "interface.h"
 #include "utlbuffer.h"
