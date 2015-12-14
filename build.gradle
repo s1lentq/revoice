@@ -46,6 +46,8 @@ if (gitInfo.tag && gitInfo.tag[0] == 'v') {
 project.ext.revoiceVersionInfo = versionInfo
 project.version = versionInfo.asVersion()
 
+apply from: 'publish.gradle'
+
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.4'
 }
