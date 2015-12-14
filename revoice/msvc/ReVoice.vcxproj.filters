@@ -96,6 +96,12 @@
     <ClInclude Include="..\src\SteamP2PCodec.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\reunion_api.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\revoice_reunion_api.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -147,6 +153,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\SteamP2PCodec.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\revoice_reunion_api.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

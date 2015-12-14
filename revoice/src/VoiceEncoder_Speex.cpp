@@ -55,6 +55,7 @@ bool VoiceEncoder_Speex::Init(int quality, int &rawFrameSize, int &encodedFrameS
 	encodedFrameSize = ENCODED_FRAME_SIZE[m_Quality];
 
 	speex_encoder_ctl(m_EncoderState, SPEEX_SET_QUALITY, &m_Quality);
+	//speex_decoder_ctl(m_DecoderState, SPEEX_SET_QUALITY, &m_Quality);
 
 	postfilter = 1;
 	speex_decoder_ctl(m_DecoderState, SPEEX_SET_ENH, &postfilter);

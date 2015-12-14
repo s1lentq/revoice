@@ -74,7 +74,7 @@ CRevoiceConfig* CRevoiceConfig::createDefault()
 bool CRevoiceConfig::parseCfgParam(const char* param, const char* value)
 {
 
-#define REU_CFG_PARSE_INT(paramName, field, _type, minVal, maxVal) \
+#define REV_CFG_PARSE_INT(paramName, field, _type, minVal, maxVal) \
 	if (!strcasecmp(paramName, param)) { \
 		int i = atoi(value); \
 		if (i < minVal || i > maxVal) { \
@@ -85,13 +85,13 @@ bool CRevoiceConfig::parseCfgParam(const char* param, const char* value)
 		return true; \
 	}
 
-#define REU_CFG_PARSE_IP(paramName, field) \
+#define REV_CFG_PARSE_IP(paramName, field) \
 	if (!strcasecmp(paramName, param)) { \
 		field = inet_addr(value); \
 		return true; \
 	}
 
-#define REU_CFG_PARSE_BOOL(paramName, field) \
+#define REV_CFG_PARSE_BOOL(paramName, field) \
 	if (!strcasecmp(paramName, param)) { \
 		int i = atoi(value); \
 		if (i < 0 || i > 1) { \
@@ -102,14 +102,14 @@ bool CRevoiceConfig::parseCfgParam(const char* param, const char* value)
 		return true; \
 	}
 
-#define REU_CFG_PARSE_STR(paramName, field) \
+#define REV_CFG_PARSE_STR(paramName, field) \
 	if (!strcasecmp(paramName, param)) { \
 		strncpy(field, value, ARRAYSIZE(field) - 1); \
 		field[ARRAYSIZE(field) - 1] = 0; \
 		return true; \
 	}
 
-	REU_CFG_PARSE_INT("LoggingMode", m_LogMode, int, rl_none, (rl_console|rl_logfile));
+	REV_CFG_PARSE_INT("LoggingMode", m_LogMode, int, rl_none, (rl_console|rl_logfile));
 
 	LCPrintf(true, " Config line parsing failed: unknown parameter '%s'\n", param);
 	return false;

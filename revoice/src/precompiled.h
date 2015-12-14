@@ -27,3 +27,5 @@
 
 #include "interface.h"
 #include "utlbuffer.h"
+#include "reunion_api.h"
+#include "revoice_reunion_api.h"
