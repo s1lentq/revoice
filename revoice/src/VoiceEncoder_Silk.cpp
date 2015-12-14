@@ -66,10 +66,12 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 	const int nSampleDataMinMS = 100;
 	const int nSamplesMin = inSampleRate * nSampleDataMinMS / 1000;
 
+	/*
 	if ((nSamplesIn + m_bufOverflowBytes.TellPut() / 2) < nSamplesMin && !bFinal) {
 		m_bufOverflowBytes.Put(pUncompressedIn, 2 * nSamplesIn);
 		return 0;
 	}
+	*/
 
 	if (m_bufOverflowBytes.TellPut()) {
 		m_bufOverflowBytes.Put(pUncompressedIn, 2 * nSamplesIn);
