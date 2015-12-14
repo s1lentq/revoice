@@ -24,136 +24,136 @@ bool CSteamP2PCodec::ResetState() {
 int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes) const {
 	const char* maxReadPos = pCompressed + compressedBytes;
 	const char* readPos = pCompressed;
-   qboolean DecodingError = FALSE;  
-   int NumDecompressedBytes = 0; 
+	qboolean DecodingError = FALSE;  
+	int NumDecompressedBytes = 0; 
 
-   auto IsReadValid = [readPos, maxReadPos, &DecodingError](uint16 nShouldRead)->bool
-   {
-      if (readPos + nShouldRead > maxReadPos)
-      {
-         DecodingError = TRUE;
-         return false;
-      }
-      return true;
-   };
+	auto IsReadValid = [readPos, maxReadPos, &DecodingError](uint16 nShouldRead)->bool
+	{
+		if (readPos + nShouldRead > maxReadPos)
+		{
+			DecodingError = TRUE;
+			return false;
+		}
+		return true;
+	};
 
-   auto IsWriteValid = [NumDecompressedBytes, maxUncompressedBytes, &DecodingError](uint16 nShouldWrite)->bool
-   {
-      if (NumDecompressedBytes + nShouldWrite > maxUncompressedBytes)
-      {
-         DecodingError = TRUE;
-         return false;
-      }
-      return true;
-   };
+	auto IsWriteValid = [NumDecompressedBytes, maxUncompressedBytes, &DecodingError](uint16 nShouldWrite)->bool
+	{
+		if (NumDecompressedBytes + nShouldWrite > maxUncompressedBytes)
+		{
+			DecodingError = TRUE;
+			return false;
+		}
+		return true;
+	};
 
-   uint16 len = 0;
-   while (
-            readPos < maxReadPos && 
-            NumDecompressedBytes<maxUncompressedBytes
-            &&!DecodingError
-         )
-   {
-      auto opcode = *reinterpret_cast<const P2P_PayloadType_e*>(readPos);
+	uint16 len = 0;
+	while (
+				readPos < maxReadPos && 
+				NumDecompressedBytes<maxUncompressedBytes
+				&&!DecodingError
+			)
+	{
+		auto opcode = *reinterpret_cast<const P2P_PayloadType_e*>(readPos);
 		readPos++;
 
 		switch (opcode) 
-      {
-         case P2P_SamplingRate: //Set sampling rate
-         {
-            if (!IsReadValid(sizeof(uint16)))
-            {
-               break;
-            }
-            readPos += sizeof(uint16);
-            break;
-         }
-         case P2P_Silk: //SILK voice payoad
+		{
+			case P2P_SamplingRate: //Set sampling rate
 			{
-            if (!IsReadValid(sizeof(uint16)))
-            {
-               DecodingError = TRUE;
-               break;
+				if (!IsReadValid(sizeof(uint16)))
+				{
+					break;
 				}
-            len = *(uint16*)readPos;
-            readPos += sizeof(uint16);
+				readPos += sizeof(uint16);
+				break;
+			}
+			case P2P_Silk: //SILK voice payload
+			{
+				if (!IsReadValid(sizeof(uint16)))
+				{
+					DecodingError = TRUE;
+					break;
+				}
+				len = *(uint16*)readPos;
+				readPos += sizeof(uint16);
 
-            if (!IsReadValid(len))
-            {
-               break;
+				if (!IsReadValid(len))
+				{
+					break;
 				}
 				
-            NumDecompressedBytes += (m_BackendCodec->Decompress(readPos, len, &pUncompressed[NumDecompressedBytes], (maxUncompressedBytes - NumDecompressedBytes))*BYTES_PER_SAMPLE);
-            break;
+				NumDecompressedBytes += (m_BackendCodec->Decompress(readPos, len, &pUncompressed[NumDecompressedBytes], (maxUncompressedBytes - NumDecompressedBytes))*BYTES_PER_SAMPLE);
+				break;
 			}
 
-         case P2P_Raw:
-         {
-            if (!IsReadValid(sizeof(uint16)))
-            {
-               break;
-            }
-            len = *(uint16*)readPos;
-            readPos += sizeof(uint16);
-            if (readPos + len > maxReadPos)
-            {
-               DecodingError = TRUE;
-               break;
-            }
-            if (!IsWriteValid(len))
-            {
-               break;
-            }
-            memmove(&pUncompressed[NumDecompressedBytes], readPos, len);
-            NumDecompressedBytes += len;//Mayby, needs checking for parity?
-            readPos += len;
-            break;
-         }
+			case P2P_Raw:
+			{
+				if (!IsReadValid(sizeof(uint16)))
+				{
+					break;
+				}
+				len = *(uint16*)readPos;
+				readPos += sizeof(uint16);
+				if (readPos + len > maxReadPos)
+				{
+					DecodingError = TRUE;
+					break;
+				}
+				if (!IsWriteValid(len))
+				{
+					break;
+				}
+				memmove(&pUncompressed[NumDecompressedBytes], readPos, len);
+				NumDecompressedBytes += len;//Mayby, needs checking for parity?
+				readPos += len;
+				break;
+			}
 
-         case P2P_Unknown2Bytes:
-         {
-            readPos += 2;
-         }
+			case P2P_Unknown2Bytes:
+			{
+				readPos += 2;
+			}
 
-         case P2P_UnknownCodec:
-         case P2P_Speex: //Somebody managed to attach very old steam to new CS. Lol.
-         {
-            //Just ignore it.
-            if (!IsReadValid(sizeof(uint16)))
-            {
-               break;
-            }
-            len = *(uint16*)readPos;
-            readPos += sizeof(uint16);
-            if (!IsReadValid(len))
-            {
-               break;
-            }
-            readPos += len;
-         }
+			case P2P_UnknownCodec:
+			case P2P_Speex: //Somebody managed to attach very old steam to new CS. Lol.
+			{
+				//Just ignore it.
+				if (!IsReadValid(sizeof(uint16)))
+				{
+					break;
+				}
+				len = *(uint16*)readPos;
+				readPos += sizeof(uint16);
+				if (!IsReadValid(len))
+				{
+					break;
+				}
+				readPos += len;
+			}
 
-         case P2P_Silence:
-         {
-            if (!IsReadValid(sizeof(uint16)))
-            {
-               break;
-            }
-            len = *(uint16*)readPos*BYTES_PER_SAMPLE; //This is number of samples. Not bytes.
-            readPos += sizeof(uint16);
-            if (!IsWriteValid(len))
-            {
-               break;
-            }
-            memset(&pUncompressed[NumDecompressedBytes], 0, len);
-            //In fact, we should ignore it in the end of packet.
-            NumDecompressedBytes += len;
-         }
+			case P2P_Silence:
+			{
+				if (!IsReadValid(sizeof(uint16)))
+				{
+					break;
+				}
+				len = *(uint16*)readPos*BYTES_PER_SAMPLE; //This is number of samples. Not bytes.
+				readPos += sizeof(uint16);
+				if (!IsWriteValid(len))
+				{
+					break;
+				}
+				memset(&pUncompressed[NumDecompressedBytes], 0, len);
+				//In fact, we should ignore it in the end of packet.
+				NumDecompressedBytes += len;
+			}
 			default: //Invalid or unknown opcode
 				return 0; 
 		}
 	}
 
-   return NumDecompressedBytes/BYTES_PER_SAMPLE; 
+	return NumDecompressedBytes/BYTES_PER_SAMPLE; 
 }
 
 //#define P2P_UNCOMPRESSED //Just to prove, that Steam users can hear uncompressed voice data.
@@ -178,15 +178,15 @@ int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, c
 	writePos += 2;
 	writePos += compressRes;
 #else
-   if (maxCompressedBytes < nSamples*BYTES_PER_SAMPLE + sizeof(P2P_PayloadType_e)){
-      //Buffer too small for uncompressed data.
-      return 0;
-   }
-   *(writePos++) = P2P_Raw; //uncompressed voice payload
-   *(uint16*)writePos = nSamples*BYTES_PER_SAMPLE;
-   writePos += 2;
-   memmove(writePos, pUncompressedBytes, nSamples*BYTES_PER_SAMPLE);
-   writePos += nSamples*BYTES_PER_SAMPLE;
+	if (maxCompressedBytes < nSamples*BYTES_PER_SAMPLE + sizeof(P2P_PayloadType_e)){
+		//Buffer too small for uncompressed data.
+		return 0;
+	}
+	*(writePos++) = P2P_Raw; //uncompressed voice payload
+	*(uint16*)writePos = nSamples*BYTES_PER_SAMPLE;
+	writePos += 2;
+	memmove(writePos, pUncompressedBytes, nSamples*BYTES_PER_SAMPLE);
+	writePos += nSamples*BYTES_PER_SAMPLE;
 #endif
 
 	return writePos - pCompressed;
