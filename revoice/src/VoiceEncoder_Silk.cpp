@@ -95,7 +95,7 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 		int originalNBytes = (pWritePosMax - pWritePos > 0xFFFF) ? -1 : (pWritePosMax - pWritePos);
 		nSamplesToEncode = (nSamples < nSamplesPerFrame) ? nSamples : nSamplesPerFrame;
 
-		this->m_encControl.useDTX = 1;
+		this->m_encControl.useDTX = 0;
 		this->m_encControl.maxInternalSampleRate = 16000;
 		this->m_encControl.useInBandFEC = 0;
 		this->m_encControl.API_sampleRate = inSampleRate;

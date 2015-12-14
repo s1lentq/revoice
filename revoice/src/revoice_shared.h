@@ -40,6 +40,7 @@ T clamp(T a, T min, T max) {
 
 extern char* trimbuf(char *str);
 extern void LCPrintf(bool critical, const char *fmt, ...);
+extern uint32 crc32(const void* buf, unsigned int bufLen);
 
 extern bool Revoice_Load();
 extern bool Revoice_Utils_Init();

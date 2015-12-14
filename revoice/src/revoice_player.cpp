@@ -6,7 +6,7 @@ CRevoicePlayer g_Players[MAX_PLAYERS];
 CRevoicePlayer::CRevoicePlayer() {
 	m_CodecType = vct_none;
 	m_SpeexCodec = new VoiceCodec_Frame(new VoiceEncoder_Speex());
-	m_SilkCodec = new VoiceEncoder_Silk();
+	m_SilkCodec = new CSteamP2PCodec(new VoiceEncoder_Silk());
 
 	m_SpeexCodec->Init(5);
 	m_SilkCodec->Init(5);

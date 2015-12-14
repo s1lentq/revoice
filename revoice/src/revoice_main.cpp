@@ -35,7 +35,7 @@ void mm_CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName, con
 		// ] sv_version
 		// "sv_version" is "1.1.2.1/2.0.0.0,48,4554"
 
-		const char* lastSeparator = strrchr(cvarName, ',');
+		const char* lastSeparator = strrchr(value, ',');
 		int buildNumber = 0;
 		if (lastSeparator) {
 			buildNumber = atoi(lastSeparator + 1);
@@ -89,10 +89,16 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 
 	switch (srcPlayer->GetCodecType()) {
 		case vct_silk:
+		{
+			CRC32_t hCrc;
+			g_engfuncs.pfnCRC32_Init(&hCrc);
+			g_engfuncs.pfnCRC32_ProcessBuffer(&hCrc, chReceived, nDataLength - 4);
+			hCrc = g_engfuncs.pfnCRC32_Final(hCrc);
 			silkData = chReceived; silkDataLen = nDataLength;
 			speexData = transcodedBuf;
 			speexDataLen = TranscodeVoice(silkData, silkDataLen, srcPlayer->GetSilkCodec(), srcPlayer->GetSpeexCodec(), transcodedBuf, sizeof(transcodedBuf));
 			break;
+		}
 
 		case vct_speex:
 			speexData = chReceived; speexDataLen = nDataLength;
@@ -130,7 +136,7 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 				break;
 		}
 
-		if (sendBuf == NULL) {
+		if (sendBuf == NULL || nSendLen == 0) {
 			continue;
 		}
 
@@ -178,7 +184,7 @@ void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t*
 
 	case vct_speex:
 		g_RehldsFuncs->MSG_WriteByte(sb, 52); //svc_voiceinit
-		g_RehldsFuncs->MSG_WriteString(sb, "speex"); //codec id
+		g_RehldsFuncs->MSG_WriteString(sb, "voice_speex"); //codec id
 		g_RehldsFuncs->MSG_WriteByte(sb, 5); //quality
 		break;
 

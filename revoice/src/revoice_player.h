@@ -2,14 +2,16 @@
 
 #include "revoice_shared.h"
 #include "VoiceEncoder_Silk.h"
+#include "SteamP2PCodec.h"
 #include "VoiceEncoder_Speex.h"
 #include "voice_codec_frame.h"
+
 
 class CRevoicePlayer {
 private:
 	IGameClient* m_RehldsClient;
 	revoice_codec_type m_CodecType;
-	VoiceEncoder_Silk* m_SilkCodec;
+	CSteamP2PCodec* m_SilkCodec;
 	VoiceCodec_Frame* m_SpeexCodec;
 	int m_Protocol;
 
@@ -22,7 +24,7 @@ public:
 	
 	int GetProtocol() const { return m_Protocol; }
 	revoice_codec_type GetCodecType() const { return m_CodecType; }
-	VoiceEncoder_Silk* GetSilkCodec() const { return m_SilkCodec;  }
+	CSteamP2PCodec* GetSilkCodec() const { return m_SilkCodec; }
 	VoiceCodec_Frame* GetSpeexCodec() const { return m_SpeexCodec;  }
 	IGameClient* GetClient() const { return m_RehldsClient; }
 };

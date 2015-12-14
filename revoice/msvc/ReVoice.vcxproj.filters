@@ -93,6 +93,9 @@
     <ClInclude Include="..\src\revoice_main.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\SteamP2PCodec.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -141,6 +144,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\revoice_main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SteamP2PCodec.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

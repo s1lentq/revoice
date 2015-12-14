@@ -61,6 +61,14 @@ char* trimbuf(char *str) {
 	return str;
 }
 
+uint32 crc32(const void* buf, unsigned int bufLen) {
+	CRC32_t hCrc;
+	g_engfuncs.pfnCRC32_Init(&hCrc);
+	g_engfuncs.pfnCRC32_ProcessBuffer(&hCrc, (void*)buf, bufLen);
+	hCrc = g_engfuncs.pfnCRC32_Final(hCrc);
+	return hCrc;
+}
+
 
 void util_syserror(const char* fmt, ...)
 {
