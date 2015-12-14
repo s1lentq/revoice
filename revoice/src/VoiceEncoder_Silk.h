@@ -27,4 +27,5 @@ public:
 	virtual int Compress(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal);
 	virtual int Decompress(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes);
 
+	int GetNumQueuedEncodingSamples() const { return m_bufOverflowBytes.TellPut() / 2; }
 }; /* size: 100 */

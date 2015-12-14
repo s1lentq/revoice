@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-CSteamP2PCodec::CSteamP2PCodec(IVoiceCodec* backend) {
+CSteamP2PCodec::CSteamP2PCodec(VoiceEncoder_Silk* backend) {
 	m_BackendCodec = backend;
 }
 
