@@ -69,7 +69,6 @@ uint32 crc32(const void* buf, unsigned int bufLen) {
 	return hCrc;
 }
 
-
 void util_syserror(const char* fmt, ...)
 {
 	va_list	argptr;

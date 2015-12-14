@@ -32,7 +32,7 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 				readPos += 2;
 				break;
 
-			case 0x04: //Voice payoad
+			case 0x04: //Voice payload
 			{
 				if (readPos + 2 > maxReadPos) {
 					return 0;

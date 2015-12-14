@@ -8,8 +8,8 @@ CRevoicePlayer::CRevoicePlayer() {
 	m_SpeexCodec = new VoiceCodec_Frame(new VoiceEncoder_Speex());
 	m_SilkCodec = new CSteamP2PCodec(new VoiceEncoder_Silk());
 
-	m_SpeexCodec->Init(5);
-	m_SilkCodec->Init(5);
+	m_SpeexCodec->Init(SPEEX_VOICE_QUALITY);
+	m_SilkCodec->Init(SILK_VOICE_QUALITY);
 
 	m_RehldsClient = NULL;
 	m_Protocol = 0;
@@ -28,11 +28,13 @@ void CRevoicePlayer::InitVoice(revoice_codec_type codecType) {
 void CRevoicePlayer::OnConnected(int protocol) {
 	m_Protocol = protocol;
 	m_CodecType = vct_none;
+	m_VoiceRate = 0;
 }
 
-void CRevoicePlayer::OnDisconected() {
+void CRevoicePlayer::OnDisconnected() {
 	m_Protocol = 0;
 	m_CodecType = vct_none;
+	m_VoiceRate = 0;
 }
 
 void Revoice_Init_Players() {
@@ -54,4 +56,43 @@ CRevoicePlayer* GetPlayerByEdict(const edict_t* ed) {
 	}
 
 	return &g_Players[clientId];
+}
+
+void CRevoicePlayer::SetLastVoiceTime(double time)
+{
+	UpdateVoiceRate(time - m_RehldsClient->GetLastVoiceTime());
+	m_RehldsClient->SetLastVoiceTime(time);
+}
+
+void CRevoicePlayer::UpdateVoiceRate(double delta)
+{
+	if (m_VoiceRate)
+	{
+		switch (m_CodecType)
+		{
+		case vct_silk:
+			m_VoiceRate -= int(delta * MAX_SILK_VOICE_RATE) + MAX_SILK_DATA_LEN;
+			break;
+
+		case vct_speex:
+			m_VoiceRate -= int(delta * MAX_SPEEX_VOICE_RATE) + MAX_SPEEX_DATA_LEN;
+			break;
+
+		default:
+			;
+		}
+
+		if (m_VoiceRate < 0)
+			m_VoiceRate = 0;
+	}
+}
+
+void CRevoicePlayer::IncreaseVoiceRate(int dataLength)
+{
+	m_VoiceRate += dataLength;
+}
+
+int CRevoicePlayer::GetVoiceRate()
+{
+	return m_VoiceRate;
 }

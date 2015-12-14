@@ -14,13 +14,18 @@ private:
 	CSteamP2PCodec* m_SilkCodec;
 	VoiceCodec_Frame* m_SpeexCodec;
 	int m_Protocol;
+	int m_VoiceRate;
 
 public:
 	CRevoicePlayer();
 	void Initialize(IGameClient* cl);
 	void OnConnected(int protocol);
-	void OnDisconected();
+	void OnDisconnected();
 	void InitVoice(revoice_codec_type codecType);
+	void SetLastVoiceTime(double time);
+	void UpdateVoiceRate(double delta);
+	void IncreaseVoiceRate(int dataLength);
+	int GetVoiceRate();
 	
 	int GetProtocol() const { return m_Protocol; }
 	revoice_codec_type GetCodecType() const { return m_CodecType; }

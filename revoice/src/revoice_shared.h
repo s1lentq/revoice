@@ -3,13 +3,16 @@
 #include "rehlds_api.h"
 
 #define MAX_PLAYERS					32
-#define MAX_STEAMIDSALTLEN			64
 
 #define LOG_PREFIX					"[REVOICE]: "
 
-#define HLDS_APPID					10
-#define HLDS_APPVERSION				"1.1.2.7/Stdio"
+#define MAX_SILK_DATA_LEN			650
+#define MAX_SPEEX_DATA_LEN			228
+#define MAX_SILK_VOICE_RATE			3800
+#define MAX_SPEEX_VOICE_RATE		2014
 
+#define SILK_VOICE_QUALITY			5
+#define SPEEX_VOICE_QUALITY			5
 
 enum revoice_log_mode {
 	rl_none = 0,
@@ -21,6 +24,11 @@ enum revoice_codec_type {
 	vct_none,
 	vct_silk,
 	vct_speex,
+};
+
+enum svc_messages {
+	svc_voiceinit = 52,
+	svc_voicedata = 53
 };
 
 template <typename T>

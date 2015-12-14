@@ -5,7 +5,7 @@ cvar_t* pcv_sv_voiceenable = NULL;
 
 void Rehlds_ClientConnected_Hook(IRehldsHook_ClientConnected* chain, IGameClient* cl) {
 	int protocol = g_ReunionApi->GetClientProtocol(cl->GetId());
-	if (protocol >= 47 && protocol <= 48) {
+	if (protocol == 47 || protocol == 48) {
 		CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
 		plr->OnConnected(protocol);
 
@@ -21,7 +21,7 @@ void Rehlds_ClientConnected_Hook(IRehldsHook_ClientConnected* chain, IGameClient
 
 void SV_DropClient_hook(IRehldsHook_SV_DropClient* chain, IGameClient* cl, bool crash, const char* msg) {
 	CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
-	plr->OnDisconected();
+	plr->OnDisconnected();
 	chain->callNext(cl, crash, msg);
 }
 
@@ -54,7 +54,6 @@ int TranscodeVoice(const char* srcBuf, int srcBufLen, IVoiceCodec* srcCodec, IVo
 		return 0;
 	}
 
-
 	int compressedSize = dstCodec->Compress(decodedBuf, numDecodedSamples, dstBuf, dstBufSize, false);
 	if (compressedSize <= 0) {
 		return 0;
@@ -77,25 +76,23 @@ int TranscodeVoice(const char* srcBuf, int srcBufLen, IVoiceCodec* srcCodec, IVo
 }
 
 void SV_ParseVoiceData_emu(IGameClient* cl) {
-	if (pcv_sv_voiceenable->value == 0.0f)
+	if (pcv_sv_voiceenable->value == 0.0f) {
 		return;
+	}
 
 	char chReceived[4096];
 	unsigned int nDataLength = g_RehldsFuncs->MSG_ReadShort();
 
-	if (nDataLength > sizeof(chReceived))
-	{
+	if (nDataLength > sizeof(chReceived)) {
 		g_RehldsFuncs->DropClient(cl, FALSE, "Invalid voice data\n");
 		return;
 	}
 
 	g_RehldsFuncs->MSG_ReadBuf(nDataLength, chReceived);
-	//cl->m_lastvoicetime = g_RehldsSv->GetTime();
 
 	CRevoicePlayer* srcPlayer = GetPlayerByClientPtr(cl);
-	if (srcPlayer->GetCodecType() == vct_none) {
-		return;
-	}
+	srcPlayer->SetLastVoiceTime(g_RehldsSv->GetTime());
+	srcPlayer->IncreaseVoiceRate(nDataLength);
 
 	char transcodedBuf[4096];
 	char* speexData; int speexDataLen;
@@ -104,6 +101,9 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 	switch (srcPlayer->GetCodecType()) {
 		case vct_silk:
 		{
+			//if (nDataLength > MAX_SILK_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SILK_VOICE_RATE)
+				//return;
+
 			silkData = chReceived; silkDataLen = nDataLength;
 			speexData = transcodedBuf;
 			speexDataLen = TranscodeVoice(silkData, silkDataLen, srcPlayer->GetSilkCodec(), srcPlayer->GetSpeexCodec(), transcodedBuf, sizeof(transcodedBuf));
@@ -111,6 +111,9 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 		}
 
 		case vct_speex:
+			//if (nDataLength > MAX_SPEEX_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SPEEX_VOICE_RATE)
+				//return;
+
 			speexData = chReceived; speexDataLen = nDataLength;
 			silkData = transcodedBuf;
 			silkDataLen = TranscodeVoice(speexData, speexDataLen, srcPlayer->GetSpeexCodec(), srcPlayer->GetSilkCodec(), transcodedBuf, sizeof(transcodedBuf));
@@ -120,14 +123,16 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 			return;
 	}
 
-	for (int i = 0; i < g_RehldsSvs->GetMaxClients(); i++) {
+	int maxclients = g_RehldsSvs->GetMaxClients();
+
+	for (int i = 0; i < maxclients; i++) {
 		CRevoicePlayer* dstPlayer = &g_Players[i];
 		IGameClient* dstClient = dstPlayer->GetClient();
 
-		if (!((1 << (i & 0x1F)) & cl->GetVoiceStream(i >> 5)) && i != cl->GetId())
+		if (!((1 << i) & cl->GetVoiceStream(0)) && dstPlayer != srcPlayer)
 			continue;
 
-		if (!dstClient->IsActive() && !dstClient->IsConnected() && i != cl->GetId())
+		if (!dstClient->IsActive() && !dstClient->IsConnected() && dstPlayer != srcPlayer)
 			continue;
 
 		char* sendBuf; int nSendLen;
@@ -146,17 +151,15 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 				break;
 		}
 
-		if (sendBuf == NULL || nSendLen == 0) {
+		if (sendBuf == NULL || nSendLen == 0)
 			continue;
-		}
 
-		if (i == cl->GetId() && !dstClient->GetLoopback())
+		if (dstPlayer == srcPlayer && !dstClient->GetLoopback())
 			nSendLen = 0;
 
 		sizebuf_t* dstDatagram = dstClient->GetDatagram();
-		if (dstDatagram->cursize + nSendLen + 6 < dstDatagram->maxsize)
-		{
-			g_RehldsFuncs->MSG_WriteByte(dstDatagram, 53); //svc_voicedata
+		if (dstDatagram->cursize + nSendLen + 6 < dstDatagram->maxsize) {
+			g_RehldsFuncs->MSG_WriteByte(dstDatagram, svc_voicedata); //svc_voicedata
 			g_RehldsFuncs->MSG_WriteByte(dstDatagram, cl->GetId());
 			g_RehldsFuncs->MSG_WriteShort(dstDatagram, nSendLen);
 			g_RehldsFuncs->MSG_WriteBuf(dstDatagram, nSendLen, sendBuf);
@@ -187,13 +190,13 @@ void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t*
 
 	switch (plr->GetCodecType()) {
 	case vct_silk:
-		g_RehldsFuncs->MSG_WriteByte(sb, 52); //svc_voiceinit
+		g_RehldsFuncs->MSG_WriteByte(sb, svc_voiceinit); //svc_voiceinit
 		g_RehldsFuncs->MSG_WriteString(sb, ""); //codec id
 		g_RehldsFuncs->MSG_WriteByte(sb, 0); //quality
 		break;
 
 	case vct_speex:
-		g_RehldsFuncs->MSG_WriteByte(sb, 52); //svc_voiceinit
+		g_RehldsFuncs->MSG_WriteByte(sb, svc_voiceinit); //svc_voiceinit
 		g_RehldsFuncs->MSG_WriteString(sb, "voice_speex"); //codec id
 		g_RehldsFuncs->MSG_WriteByte(sb, 5); //quality
 		break;
