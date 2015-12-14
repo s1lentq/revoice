@@ -113,8 +113,8 @@ bool Revoice_Load() {
 	if (!Revoice_Utils_Init())
 		return false;
 
-	if (!Revoice_Cfg_LoadDefault())
-		return false;
+	/*if (!Revoice_Cfg_LoadDefault())
+		return false;*/
 
 	if (!Revoice_RehldsApi_Init()) {
 		LCPrintf(true, "Failed to locate REHLDS API\n");
