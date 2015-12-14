@@ -54,7 +54,26 @@ int TranscodeVoice(const char* srcBuf, int srcBufLen, IVoiceCodec* srcCodec, IVo
 		return 0;
 	}
 
-	return dstCodec->Compress(decodedBuf, numDecodedSamples, dstBuf, dstBufSize, false);
+
+	int compressedSize = dstCodec->Compress(decodedBuf, numDecodedSamples, dstBuf, dstBufSize, false);
+	if (compressedSize <= 0) {
+		return 0;
+	}
+
+	/*
+	int numDecodedSamples2 = dstCodec->Decompress(dstBuf, compressedSize, decodedBuf, sizeof(decodedBuf));
+	if (numDecodedSamples2 <= 0) {
+		return compressedSize;
+	}
+
+	FILE* rawSndFile = fopen("d:\\revoice_raw.snd", "ab");
+	if (rawSndFile) {
+		fwrite(decodedBuf, 2, numDecodedSamples2, rawSndFile);
+		fclose(rawSndFile);
+	}
+	*/
+
+	return compressedSize;
 }
 
 void SV_ParseVoiceData_emu(IGameClient* cl) {

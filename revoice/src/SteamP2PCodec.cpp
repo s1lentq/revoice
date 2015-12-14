@@ -112,7 +112,7 @@ int CSteamP2PCodec::Compress(const char *pUncompressedBytes, int nSamples, char 
 	}
 	writePos += encodeRes;
 
-	uint32 cksum = crc32(pUncompressedBytes, writePos - pCompressed);
+	uint32 cksum = crc32(pCompressed, writePos - pCompressed);
 	*(uint32*)writePos = cksum;
 	writePos += 4;
 

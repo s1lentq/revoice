@@ -109,7 +109,6 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 		int16 nBytes = originalNBytes;
 		int res = SKP_Silk_SDK_Encode(this->m_pEncoder, &this->m_encControl, psRead, nSamplesToEncode, (unsigned char*)pWritePos, &nBytes);
 		*pWritePayloadSize = nBytes; //write frame size
-		printf("enc: res=%d; outlen=%d;\n", res, nBytes);
 
 		pWritePos += nBytes;
 		psRead += nSamplesToEncode;
