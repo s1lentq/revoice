@@ -234,9 +234,9 @@ int  *cdbk_index
          float sum=0;
          float g0,g1,g2;
          ptr = gain_cdbk+3*i;
-         g0=0.015625*ptr[0]+.5;
-         g1=0.015625*ptr[1]+.5;
-         g2=0.015625*ptr[2]+.5;
+         g0=0.015625f*ptr[0]+.5f;
+         g1=0.015625f*ptr[1]+.5f;
+         g2=0.015625f*ptr[2]+.5f;
 
          sum += C[0]*g0;
          sum += C[1]*g1;
@@ -244,13 +244,13 @@ int  *cdbk_index
          sum -= C[3]*g0*g1;
          sum -= C[4]*g2*g1;
          sum -= C[5]*g2*g0;
-         sum -= .5*C[6]*g0*g0;
-         sum -= .5*C[7]*g1*g1;
-         sum -= .5*C[8]*g2*g2;
+         sum -= .5f*C[6]*g0*g0;
+         sum -= .5f*C[7]*g1*g1;
+         sum -= .5f*C[8]*g2*g2;
 
          /* If 1, force "safe" pitch values to handle packet loss better */
          if (0) {
-            float tot = fabs(ptr[1]);
+            float tot = fabs((float)ptr[1]);
             if (ptr[0]>0)
                tot+=ptr[0];
             if (ptr[2]>0)

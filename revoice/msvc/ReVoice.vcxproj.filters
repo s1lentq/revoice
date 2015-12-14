@@ -10,6 +10,12 @@
     <Filter Include="public">
       <UniqueIdentifier>{2a5fb3db-9e29-48b6-8700-dce875791baf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="version">
+      <UniqueIdentifier>{3b33f11d-6bb6-40ed-8d55-a1609f01adeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gradle">
+      <UniqueIdentifier>{91057668-b802-4bd5-913c-b79adf8bff09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\dllapi.h">
@@ -102,6 +108,10 @@
     <ClInclude Include="..\src\revoice_reunion_api.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\version\appversion.h">
+      <Filter>version</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -158,5 +168,20 @@
     <ClCompile Include="..\src\revoice_reunion_api.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\version\version.cpp">
+      <Filter>version</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReVoice.def" />
+    <None Include="..\version\appversion.vm">
+      <Filter>version</Filter>
+    </None>
+    <None Include="..\build.gradle">
+      <Filter>gradle</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ReVoice.rc" />
   </ItemGroup>
 </Project>

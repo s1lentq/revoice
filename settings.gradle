@@ -1,0 +1,4 @@
+rootProject.name = 'revoice'
+include 'revoice'
+include 'dep/silk'
+include 'dep/speex'

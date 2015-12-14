@@ -10,6 +10,8 @@
 **/msvc/*.suo
 **/msvc/*.aps
 **/msvc/ipch
+**/PublishPath*.txt
+**/*.log
 
 publish
 **/appversion.h

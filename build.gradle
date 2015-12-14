@@ -1,0 +1,51 @@
+import versioning.GitVersioner
+import versioning.RevoiceVersionInfo
+
+apply from: 'shared.gradle'
+group = 'revoice'
+
+apply plugin: 'idea'
+
+idea {
+	project {
+		languageLevel = 'JDK_1_7'
+	}
+}
+
+def gitInfo = GitVersioner.versionForDir(project.rootDir)
+if (!gitInfo) {
+	throw new RuntimeException('Running outside git repository')
+}
+
+RevoiceVersionInfo versionInfo
+if (gitInfo.tag && gitInfo.tag[0] == 'v') {
+
+	def m = gitInfo.tag =~ /^v(\d+)\.(\d+)(\.(\d+))?$/
+	if (!m.find()) {
+		throw new RuntimeException("Invalid git version tag name ${gitInfo.tag}")
+	}
+
+	versionInfo = new RevoiceVersionInfo(
+		majorVersion: m.group(1) as int,
+		minorVersion: m.group(2) as int,
+		maintenanceVersion: m.group(4) ? (m.group(4) as int) : null,
+		countCommit: gitInfo.countCommit,
+		lastCommitDate: gitInfo.lastCommitDate
+	)
+} else {
+
+	versionInfo = new RevoiceVersionInfo(
+		majorVersion: project.majorVersion as int,
+		minorVersion: project.minorVersion as int,
+		specialVersion: project.specialVersion,
+		countCommit: gitInfo.countCommit,
+		lastCommitDate: gitInfo.lastCommitDate
+	)
+}
+
+project.ext.revoiceVersionInfo = versionInfo
+project.version = versionInfo.asVersion()
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.4'
+}
