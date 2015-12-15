@@ -144,6 +144,7 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 			case P2P_Unknown2Bytes:
 			{
 				readPos += 2;
+				break;
 			}
 
 			case P2P_UnknownCodec:
@@ -161,6 +162,8 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 					break;
 				}
 				readPos += len;
+
+				break;
 			}
 
 			case P2P_Silence:
@@ -178,6 +181,8 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 				memset(&pUncompressed[NumDecompressedBytes], 0, len);
 				//In fact, we should ignore it in the end of packet.
 				NumDecompressedBytes += len;
+
+				break;
 			}
 			default: //Invalid or unknown opcode
 				return 0; 
