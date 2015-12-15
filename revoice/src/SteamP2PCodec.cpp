@@ -105,7 +105,6 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 			{
 				if (!IsReadValid(sizeof(uint16)))
 				{
-					DecodingError = TRUE;
 					break;
 				}
 				len = *(uint16*)readPos;
@@ -128,9 +127,8 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 				}
 				len = *(uint16*)readPos;
 				readPos += sizeof(uint16);
-				if (readPos + len > maxReadPos)
+            if (!IsReadValid(len))
 				{
-					DecodingError = TRUE;
 					break;
 				}
 				if (!IsWriteValid(len))
@@ -196,7 +194,7 @@ int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, c
 		return 0;
 	}
 
-	*(writePos++) = 0x0B; //set sampling rate
+	*(writePos++) = P2P_SamplingRate; //set sampling rate
 	*(uint16*)writePos = 16000;
 	writePos += 2;
 #ifndef P2P_UNCOMPRESSED
