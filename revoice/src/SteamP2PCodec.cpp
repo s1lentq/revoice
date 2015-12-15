@@ -127,7 +127,7 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 				}
 				len = *(uint16*)readPos;
 				readPos += sizeof(uint16);
-            if (!IsReadValid(len))
+				if (!IsReadValid(len))
 				{
 					break;
 				}
