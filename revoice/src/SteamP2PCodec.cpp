@@ -21,6 +21,39 @@ bool CSteamP2PCodec::ResetState() {
 	return m_BackendCodec->ResetState();
 }
 
+
+/*
+	Packet description:
+	___START___
+	uint64 - >Speaker SteamID
+	//Payload data:
+		byte: PayloadType
+		0: Silence samples
+			uint16->Number of silence samples; (memset(&Data,0,sizeof(Sample)*Num);
+		1-4: VoiceData:
+			DataType:
+				1:Unknown codec,returns 0. ("No decoder available, abandoning voice\n");
+				2:Speex codec. Returns 0 too ("No speex decoder available, abandoning voice\n"); //returns 7 (k_EVoiceResultUnsupportedCodec).
+				3:Uncompressed data (memmove, всё такое)
+				4: Silk codec.
+			uint16: NumOfDataBytes;
+			while(NumOfDataBytes)
+			{
+				EncodedBytes:int16(-1:EndOfPacket, 0:Silence)
+				Decompress...
+			}
+
+		10:Unknown
+			Read 2 bytes, which not used.
+		11: Sample rate
+			uint16: SampleRate. (Looks like packet sample rate).
+			DecompressedFrameSz=20*SampleRate/1000;
+		default:
+			return 5(k_EVoiceResultDataCorrupted);
+	4 bytes - CRC32 of all packet, except this 4 bytes; Returns 5 (k_EVoiceResultDataCorrupted), if not valid;
+	__END___
+*/
+	
 int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes) const {
 	const char* maxReadPos = pCompressed + compressedBytes;
 	const char* readPos = pCompressed;
