@@ -37,6 +37,21 @@ void CRevoicePlayer::OnDisconnected() {
 	m_VoiceRate = 0;
 }
 
+void CRevoicePlayer::OnConnectedRestart(edict_t *pEntity) {
+	IGameClient* cl = g_RehldsFuncs->GetHostClient();
+	int protocol = g_ReunionApi->GetClientProtocol(cl->GetId());
+
+	if (protocol == 47 || protocol == 48)
+	{
+		OnConnected(protocol);
+		InitVoice(vct_speex);
+		if (protocol == 48)
+		{
+			g_engfuncs.pfnQueryClientCvarValue2(pEntity, "sv_version", 0);
+		}
+	}
+}
+
 void Revoice_Init_Players() {
 	int maxclients = g_RehldsSvs->GetMaxClients();
 

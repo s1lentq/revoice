@@ -25,8 +25,8 @@ public:
 	void SetLastVoiceTime(double time);
 	void UpdateVoiceRate(double delta);
 	void IncreaseVoiceRate(int dataLength);
+	void OnConnectedRestart(edict_t *pEntity);
 	int GetVoiceRate();
-	
 	int GetProtocol() const { return m_Protocol; }
 	revoice_codec_type GetCodecType() const { return m_CodecType; }
 	CSteamP2PCodec* GetSilkCodec() const { return m_SilkCodec; }
