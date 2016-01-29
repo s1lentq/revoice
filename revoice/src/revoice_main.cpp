@@ -5,6 +5,7 @@ cvar_t* pcv_sv_voiceenable = NULL;
 
 void Rehlds_ClientConnected_Hook(IRehldsHook_ClientConnected* chain, IGameClient* cl) {
 	int protocol = g_ReunionApi->GetClientProtocol(cl->GetId());
+
 	if (protocol == 47 || protocol == 48) {
 		CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
 		plr->OnConnected(protocol);
@@ -18,10 +19,27 @@ void Rehlds_ClientConnected_Hook(IRehldsHook_ClientConnected* chain, IGameClient
 	chain->callNext(cl);
 }
 
-void SV_DropClient_hook(IRehldsHook_SV_DropClient* chain, IGameClient* cl, bool crash, const char* msg) {
-	CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
+qboolean mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]) {
+	CRevoicePlayer* plr = GetPlayerByEdict(pEntity);
+	int protocol = plr->GetProtocol();
+
+	if (protocol == 0)
+	{
+		plr->OnConnectedRestart(pEntity);
+	}
+	else if (protocol == 48)
+	{
+		g_engfuncs.pfnQueryClientCvarValue2(pEntity, "sv_version", 0);
+	}
+
+	RETURN_META_VALUE(MRES_IGNORED, TRUE);
+}
+
+void mm_ClientDisconnect(edict_t *pEntity)
+{
+	CRevoicePlayer* plr = GetPlayerByEdict(pEntity);
 	plr->OnDisconnected();
-	chain->callNext(cl, crash, msg);
+	RETURN_META(MRES_IGNORED);
 }
 
 void mm_CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName, const char *cvarValue) {
@@ -175,14 +193,6 @@ void Rehlds_HandleNetCommand(IRehldsHook_HandleNetCommand* chain, IGameClient* c
 	chain->callNext(cl, opcode);
 }
 
-qboolean mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]) {
-	CRevoicePlayer* plr = GetPlayerByEdict(pEntity);
-	if (plr->GetProtocol() == 48) {
-		g_engfuncs.pfnQueryClientCvarValue2(pEntity, "sv_version", 0);
-	}
-	RETURN_META_VALUE(MRES_IGNORED, TRUE);
-}
-
 void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t* sb) {
 	IGameClient* cl = g_RehldsFuncs->GetHostClient();
 	CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
@@ -201,14 +211,20 @@ void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t*
 		break;
 
 	default:
-		LCPrintf(true, "SV_WriteVoiceCodec() called on client(%d) with unknown voice codec\n", cl->GetId());
+		//LCPrintf(true, "SV_WriteVoiceCodec() called on client(%d) with unknown voice codec\n", cl->GetId());
+		
+		// set default codec
+		plr->InitVoice(vct_speex);
+		g_RehldsFuncs->MSG_WriteByte(sb, svc_voiceinit); //svc_voiceinit
+		g_RehldsFuncs->MSG_WriteString(sb, "voice_speex"); //codec id
+		g_RehldsFuncs->MSG_WriteByte(sb, 5); //quality
 		break;
+
 	}
 }
 
 bool Revoice_Main_Init() {
 	g_RehldsHookchains->ClientConnected()->registerHook(Rehlds_ClientConnected_Hook);
-	g_RehldsHookchains->SV_DropClient()->registerHook(SV_DropClient_hook);
 	g_RehldsHookchains->HandleNetCommand()->registerHook(Rehlds_HandleNetCommand);
 	g_RehldsHookchains->SV_WriteVoiceCodec()->registerHook(SV_WriteVoiceCodec_hooked);
 	pcv_sv_voiceenable = g_engfuncs.pfnCVarGetPointer("sv_voiceenable");
