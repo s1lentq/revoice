@@ -3,44 +3,29 @@
 
 cvar_t* pcv_sv_voiceenable = NULL;
 
-void Rehlds_ClientConnected_Hook(IRehldsHook_ClientConnected* chain, IGameClient* cl) {
-	int protocol = g_ReunionApi->GetClientProtocol(cl->GetId());
-	if (protocol == 47 || protocol == 48) {
-		CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
-		plr->OnConnected(protocol);
-
-		// default codec
-		plr->InitVoice(vct_speex);
-
-		//for p48 we will query sv_version cvar value later in mm_ClientConnect
-	}
-
-	chain->callNext(cl);
-}
-
 void SV_DropClient_hook(IRehldsHook_SV_DropClient* chain, IGameClient* cl, bool crash, const char* msg) {
+
 	CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
 	plr->OnDisconnected();
 	chain->callNext(cl, crash, msg);
 }
 
 void mm_CvarValue2(const edict_t *pEnt, int requestID, const char *cvarName, const char *cvarValue) {
-	if (!strcmp("sv_version", cvarName)) {
-		// ] sv_version
-		// "sv_version" is "1.1.2.1/2.0.0.0,48,4554"
 
-		const char* lastSeparator = strrchr(cvarValue, ',');
-		int buildNumber = 0;
-		if (lastSeparator) {
-			buildNumber = atoi(lastSeparator + 1);
-		}
+	CRevoicePlayer* plr = GetPlayerByEdict(pEnt);
 
-		CRevoicePlayer* plr = GetPlayerByEdict(pEnt);
-		if (buildNumber > 4554) {
-			plr->InitVoice(vct_silk);
-		} else {
-			plr->InitVoice(vct_speex);
-		}
+	if (plr->GetRequestId() != requestID) {
+		RETURN_META(MRES_IGNORED);
+	}
+
+	const char* lastSeparator = strrchr(cvarValue, ',');
+	int buildNumber = 0;
+	if (lastSeparator) {
+		buildNumber = atoi(lastSeparator + 1);
+	}
+
+	if (buildNumber > 4554) {
+		plr->SetCodecType(vct_silk);
 	}
 
 	RETURN_META(MRES_IGNORED);
@@ -100,8 +85,8 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 	switch (srcPlayer->GetCodecType()) {
 		case vct_silk:
 		{
-			if (nDataLength > MAX_SILK_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SILK_VOICE_RATE)
-				return;
+			//if (nDataLength > MAX_SILK_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SILK_VOICE_RATE)
+			//	return;
 
 			silkData = chReceived; silkDataLen = nDataLength;
 			speexData = transcodedBuf;
@@ -110,8 +95,8 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 		}
 
 		case vct_speex:
-			if (nDataLength > MAX_SPEEX_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SPEEX_VOICE_RATE)
-				return;
+			//if (nDataLength > MAX_SPEEX_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SPEEX_VOICE_RATE)
+			//	return;
 
 			speexData = chReceived; speexDataLen = nDataLength;
 			silkData = transcodedBuf;
@@ -176,14 +161,14 @@ void Rehlds_HandleNetCommand(IRehldsHook_HandleNetCommand* chain, IGameClient* c
 }
 
 qboolean mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]) {
+
 	CRevoicePlayer* plr = GetPlayerByEdict(pEntity);
-	if (plr->GetProtocol() == 48) {
-		g_engfuncs.pfnQueryClientCvarValue2(pEntity, "sv_version", 0);
-	}
+	plr->OnConnected();
 	RETURN_META_VALUE(MRES_IGNORED, TRUE);
 }
 
 void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t* sb) {
+
 	IGameClient* cl = g_RehldsFuncs->GetHostClient();
 	CRevoicePlayer* plr = GetPlayerByClientPtr(cl);
 
@@ -207,7 +192,6 @@ void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec* chain, sizebuf_t*
 }
 
 bool Revoice_Main_Init() {
-	g_RehldsHookchains->ClientConnected()->registerHook(Rehlds_ClientConnected_Hook);
 	g_RehldsHookchains->SV_DropClient()->registerHook(SV_DropClient_hook);
 	g_RehldsHookchains->HandleNetCommand()->registerHook(Rehlds_HandleNetCommand);
 	g_RehldsHookchains->SV_WriteVoiceCodec()->registerHook(SV_WriteVoiceCodec_hooked);

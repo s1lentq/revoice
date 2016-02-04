@@ -6,7 +6,6 @@
 #include "VoiceEncoder_Speex.h"
 #include "voice_codec_frame.h"
 
-
 class CRevoicePlayer {
 private:
 	IGameClient* m_RehldsClient;
@@ -15,19 +14,24 @@ private:
 	VoiceCodec_Frame* m_SpeexCodec;
 	int m_Protocol;
 	int m_VoiceRate;
+	int m_RequestId;
+	bool m_Connected;
 
 public:
 	CRevoicePlayer();
 	void Initialize(IGameClient* cl);
-	void OnConnected(int protocol);
+	void OnConnected();
 	void OnDisconnected();
-	void InitVoice(revoice_codec_type codecType);
+
 	void SetLastVoiceTime(double time);
 	void UpdateVoiceRate(double delta);
 	void IncreaseVoiceRate(int dataLength);
-	int GetVoiceRate();
-	
-	int GetProtocol() const { return m_Protocol; }
+
+	int GetVoiceRate() const { return m_VoiceRate; }
+	int GetRequestId() const { return m_RequestId; }
+	bool IsConnected() const { return m_Connected; }
+
+	void SetCodecType(revoice_codec_type codecType) { m_CodecType = codecType; };
 	revoice_codec_type GetCodecType() const { return m_CodecType; }
 	CSteamP2PCodec* GetSilkCodec() const { return m_SilkCodec; }
 	VoiceCodec_Frame* GetSpeexCodec() const { return m_SpeexCodec;  }
