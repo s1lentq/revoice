@@ -60,10 +60,6 @@ int TranscodeVoice(const char* srcBuf, int srcBufLen, IVoiceCodec* srcCodec, IVo
 }
 
 void SV_ParseVoiceData_emu(IGameClient* cl) {
-	if (pcv_sv_voiceenable->value == 0.0f) {
-		return;
-	}
-
 	char chReceived[4096];
 	unsigned int nDataLength = g_RehldsFuncs->MSG_ReadShort();
 
@@ -73,6 +69,10 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 	}
 
 	g_RehldsFuncs->MSG_ReadBuf(nDataLength, chReceived);
+
+	if (pcv_sv_voiceenable->value == 0.0f) {
+		return;
+	}
 
 	CRevoicePlayer* srcPlayer = GetPlayerByClientPtr(cl);
 	srcPlayer->SetLastVoiceTime(g_RehldsSv->GetTime());
