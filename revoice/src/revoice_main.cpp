@@ -85,8 +85,8 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 	switch (srcPlayer->GetCodecType()) {
 		case vct_silk:
 		{
-			//if (nDataLength > MAX_SILK_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SILK_VOICE_RATE)
-			//	return;
+			if (nDataLength > MAX_SILK_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SILK_VOICE_RATE)
+				return;
 
 			silkData = chReceived; silkDataLen = nDataLength;
 			speexData = transcodedBuf;
@@ -95,8 +95,8 @@ void SV_ParseVoiceData_emu(IGameClient* cl) {
 		}
 
 		case vct_speex:
-			//if (nDataLength > MAX_SPEEX_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SPEEX_VOICE_RATE)
-			//	return;
+			if (nDataLength > MAX_SPEEX_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_SPEEX_VOICE_RATE)
+				return;
 
 			speexData = chReceived; speexDataLen = nDataLength;
 			silkData = transcodedBuf;

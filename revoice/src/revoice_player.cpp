@@ -23,6 +23,7 @@ void CRevoicePlayer::OnConnected()
 {
 	// already connected, suppose now there is a change of level?
 	if (m_Connected) {
+		m_VoiceRate = 0;
 		return;
 	}
 
