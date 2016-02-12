@@ -19,4 +19,21 @@ private:
 	int StreamEncode(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal) const;
 private:
 	VoiceEncoder_Silk* m_BackendCodec;
+
+	enum P2P_PayloadType_e:uint8
+	{
+		P2P_Silence, //Number of empty samples, which should be set to NULL.
+		P2P_UnknownCodec, /*
+								Not used for now. I suppose, it was used for Miles voice data. 
+								Returns "No decoder available, abandoning voice\n" in SteamClient.
+								*/
+		P2P_Speex, /*
+					Not used for now. "No speex decoder available, abandoning voice\n" in SteamClient.
+					In fact, k_EVoiceResultUnsupportedCodec(7) should be returned after it.. but who cares
+					*/
+		P2P_Raw,  //Can be used in theory.    
+		P2P_Silk, 
+		P2P_Unknown2Bytes = 0xA, //Can't understand what for is it, but it's exists in SteamClient.
+		P2P_SamplingRate
+	};
 };
