@@ -34,6 +34,7 @@
  *    version.
  *
  */
+
 #include "precompiled.h"
 
 // Must provide at least one of these..
@@ -73,9 +74,11 @@ mutil_funcs_t *gpMetaUtilFuncs;		// metamod utility functions
 C_DLLEXPORT int Meta_Query(char * /*ifvers */, plugin_info_t **pPlugInfo, mutil_funcs_t *pMetaUtilFuncs)
 {
 	// Give metamod our plugin_info struct
-	*pPlugInfo=&Plugin_info;
+	*pPlugInfo = &Plugin_info;
+
 	// Get metamod utility function table.
-	gpMetaUtilFuncs=pMetaUtilFuncs;
+	gpMetaUtilFuncs = pMetaUtilFuncs;
+
 	return(TRUE);
 }
 
@@ -90,13 +93,16 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */, META_FUNCTIONS *pFunctionTa
 		LOG_ERROR(PLID, "Meta_Attach called with null pMGlobals");
 		return(FALSE);
 	}
-	gpMetaGlobals=pMGlobals;
+
+	gpMetaGlobals = pMGlobals;
+
 	if(!pFunctionTable) {
 		LOG_ERROR(PLID, "Meta_Attach called with null pFunctionTable");
 		return(FALSE);
 	}
+
 	memcpy(pFunctionTable, &gMetaFunctionTable, sizeof(META_FUNCTIONS));
-	gpGamedllFuncs=pGamedllFuncs;
+	gpGamedllFuncs = pGamedllFuncs;
 
 	return Revoice_Load() ? (TRUE) : (FALSE);
 }
@@ -109,7 +115,8 @@ C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */, PL_UNLOAD_REASON /* reason 
 	return(TRUE);
 }
 
-bool Revoice_Load() {
+bool Revoice_Load()
+{
 	if (!Revoice_Utils_Init())
 		return false;
 
@@ -125,6 +132,7 @@ bool Revoice_Load() {
 		return false;
 
 	Revoice_Init_Players();
+
 	if (!Revoice_Main_Init()) {
 		LCPrintf(true, "Initialization failed\n");
 		return false;

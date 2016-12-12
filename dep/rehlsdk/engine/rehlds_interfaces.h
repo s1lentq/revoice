@@ -71,6 +71,7 @@ public:
 	virtual void SetLastVoiceTime(double time) = 0;
 	virtual double GetLastVoiceTime() = 0;
 	virtual bool GetLoopback() = 0;
+	virtual struct usercmd_s *GetLastCmd() = 0;
 
 	// this must be the last virtual function in class
 #ifdef REHLDS_SELF
@@ -123,4 +124,9 @@ public:
 	virtual int GetDecalNameNum() = 0;
 
 	virtual double GetTime() = 0;
+	virtual void SetResourcesNum(int num) = 0;
+	virtual struct resource_s *GetResource(int index) = 0;
+	virtual void SetName(const char* name) = 0;
+	virtual class ISteamGameServer *GetSteamGameServer() = 0;
+	virtual struct netadr_s *GetNetFrom() = 0;
 };

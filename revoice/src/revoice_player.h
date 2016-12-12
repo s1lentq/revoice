@@ -31,11 +31,11 @@ public:
 	int GetRequestId() const { return m_RequestId; }
 	bool IsConnected() const { return m_Connected; }
 
-	void SetCodecType(revoice_codec_type codecType) { m_CodecType = codecType; };
-	revoice_codec_type GetCodecType() const { return m_CodecType; }
-	CSteamP2PCodec* GetSilkCodec() const { return m_SilkCodec; }
-	VoiceCodec_Frame* GetSpeexCodec() const { return m_SpeexCodec;  }
-	IGameClient* GetClient() const { return m_RehldsClient; }
+	void SetCodecType(revoice_codec_type codecType)		{ m_CodecType = codecType; };
+	revoice_codec_type GetCodecType() const				{ return m_CodecType; }
+	CSteamP2PCodec* GetSilkCodec() const				{ return m_SilkCodec; }
+	VoiceCodec_Frame* GetSpeexCodec() const				{ return m_SpeexCodec;  }
+	IGameClient* GetClient() const						{ return m_RehldsClient; }
 };
 
 extern CRevoicePlayer g_Players[MAX_PLAYERS];

@@ -71,8 +71,7 @@ int VoiceCodec_Frame::Compress(const char *pUncompressedBytes, int nSamples, cha
 	}
 
 	// If it must get the last data, just pad with zeros..
-	if (bFinal && m_nEncodeBufferSamples && (maxCompressedBytes - nCompressedBytes) >= m_nEncodedBytes)
-	{
+	if (bFinal && m_nEncodeBufferSamples && (maxCompressedBytes - nCompressedBytes) >= m_nEncodedBytes) {
 		memset(&m_EncodeBuffer[m_nEncodeBufferSamples], 0, (m_nRawSamples - m_nEncodeBufferSamples) * BYTES_PER_SAMPLE);
 		m_pFrameEncoder->EncodeFrame((const char*)m_EncodeBuffer, &pCompressed[nCompressedBytes]);
 		nCompressedBytes += m_nEncodedBytes;

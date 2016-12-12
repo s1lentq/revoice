@@ -2,7 +2,8 @@
 
 CRevoicePlayer g_Players[MAX_PLAYERS];
 
-CRevoicePlayer::CRevoicePlayer() {
+CRevoicePlayer::CRevoicePlayer()
+{
 	m_CodecType = vct_none;
 	m_SpeexCodec = new VoiceCodec_Frame(new VoiceEncoder_Speex());
 	m_SilkCodec = new CSteamP2PCodec(new VoiceEncoder_Silk());
@@ -15,7 +16,8 @@ CRevoicePlayer::CRevoicePlayer() {
 	m_Connected = false;
 }
 
-void CRevoicePlayer::Initialize(IGameClient* cl) {
+void CRevoicePlayer::Initialize(IGameClient* cl)
+{
 	m_RehldsClient = cl;
 }
 
@@ -67,18 +69,20 @@ void Revoice_Init_Players()
 	}
 }
 
-CRevoicePlayer* GetPlayerByClientPtr(IGameClient* cl) {
-	return &g_Players[cl->GetId()];
+CRevoicePlayer* GetPlayerByClientPtr(IGameClient* cl)
+{
+	return &g_Players[ cl->GetId() ];
 }
 
 CRevoicePlayer* GetPlayerByEdict(const edict_t* ed)
 {
 	int clientId = g_engfuncs.pfnIndexOfEdict(ed) - 1;
+
 	if (clientId < 0 || clientId >= g_RehldsSvs->GetMaxClients()) {
 		util_syserror("Invalid player edict id=%d\n", clientId);
 	}
 
-	return &g_Players[clientId];
+	return &g_Players[ clientId ];
 }
 
 void CRevoicePlayer::SetLastVoiceTime(double time)
@@ -93,15 +97,16 @@ void CRevoicePlayer::UpdateVoiceRate(double delta)
 	{
 		switch (m_CodecType)
 		{
-		case vct_silk:
-			m_VoiceRate -= int(delta * MAX_SILK_VOICE_RATE) + MAX_SILK_DATA_LEN;
-			break;
+			case vct_silk:
+				m_VoiceRate -= int(delta * MAX_SILK_VOICE_RATE) + MAX_SILK_DATA_LEN;
+				break;
 
-		case vct_speex:
-			m_VoiceRate -= int(delta * MAX_SPEEX_VOICE_RATE) + MAX_SPEEX_DATA_LEN;
-			break;
-		default:
-			break;
+			case vct_speex:
+				m_VoiceRate -= int(delta * MAX_SPEEX_VOICE_RATE) + MAX_SPEEX_DATA_LEN;
+				break;
+
+			default:
+				break;
 		}
 
 		if (m_VoiceRate < 0)

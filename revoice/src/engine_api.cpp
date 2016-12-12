@@ -31,8 +31,7 @@
 
 #include "precompiled.h"
 
-enginefuncs_t meta_engfuncs =
-{
+enginefuncs_t meta_engfuncs = {
 	NULL,						// pfnPrecacheModel()
 	NULL,						// pfnPrecacheSound()
 	NULL,						// pfnSetModel()

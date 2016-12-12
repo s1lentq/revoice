@@ -31,8 +31,7 @@
 
 #include "precompiled.h"
 
-static DLL_FUNCTIONS gFunctionTable =
-{
+static DLL_FUNCTIONS gFunctionTable = {
 	NULL,					// pfnGameInit
 	NULL,					// pfnSpawn
 	NULL,					// pfnThink
@@ -120,7 +119,8 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 	return(TRUE);
 }
 
-C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion) {
+C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion)
+{
 	if (!pNewFunctionTable) {
 		UTIL_LogPrintf("GetNewDLLFunctions called with null pNewFunctionTable");
 		return(FALSE);

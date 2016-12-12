@@ -6,15 +6,15 @@
 
 class VoiceEncoder_Silk : public IVoiceCodec {
 private:
-	void *                     m_pEncoder;           /*     4     4 */
-	//int                        m_API_fs_Hz;          /*     8     4 */
-	int                        m_targetRate_bps;     /*    12     4 */
-	int                        m_packetLoss_perc;    /*    16     4 */
-	SKP_SILK_SDK_EncControlStruct m_encControl;      /*    20    32 */
-	CUtlBuffer          m_bufOverflowBytes;    /*    52    24 */
+	void * m_pEncoder;								/*     4     4 */
+	//int m_API_fs_Hz;								/*     8     4 */
+	int m_targetRate_bps;							/*    12     4 */
+	int m_packetLoss_perc;							/*    16     4 */
+	SKP_SILK_SDK_EncControlStruct m_encControl;		/*    20    32 */
+	CUtlBuffer m_bufOverflowBytes;					/*    52    24 */
 
-	void *                     m_pDecoder;           /*    76     4 */
-	SKP_SILK_SDK_DecControlStruct m_decControl;      /*    80    20 */
+	void * m_pDecoder;								/*    76     4 */
+	SKP_SILK_SDK_DecControlStruct m_decControl;		/*    80    20 */
 
 public:
 	VoiceEncoder_Silk();

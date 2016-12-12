@@ -1,14 +1,15 @@
-
 #include "precompiled.h"
 
-VoiceEncoder_Silk::VoiceEncoder_Silk() {
+VoiceEncoder_Silk::VoiceEncoder_Silk()
+{
 	m_pEncoder = NULL;
 	m_pDecoder = NULL;
 	m_targetRate_bps = 25000;
 	m_packetLoss_perc = 0;
 }
 
-VoiceEncoder_Silk::~VoiceEncoder_Silk() {
+VoiceEncoder_Silk::~VoiceEncoder_Silk()
+{
 	if (m_pEncoder) {
 		free(m_pEncoder);
 		m_pEncoder = NULL;
@@ -20,7 +21,8 @@ VoiceEncoder_Silk::~VoiceEncoder_Silk() {
 	}
 }
 
-bool VoiceEncoder_Silk::Init(int quality) {
+bool VoiceEncoder_Silk::Init(int quality)
+{
 	m_targetRate_bps = 25000;
 	m_packetLoss_perc = 0;
 
@@ -37,11 +39,13 @@ bool VoiceEncoder_Silk::Init(int quality) {
 	return true;
 }
 
-void VoiceEncoder_Silk::Release() {
+void VoiceEncoder_Silk::Release()
+{
 	delete this;
 }
 
-bool VoiceEncoder_Silk::ResetState() {
+bool VoiceEncoder_Silk::ResetState()
+{
 	if (m_pEncoder)
 		SKP_Silk_SDK_InitEncoder(m_pEncoder, &this->m_encControl);
 
@@ -49,10 +53,12 @@ bool VoiceEncoder_Silk::ResetState() {
 		SKP_Silk_SDK_InitDecoder(m_pDecoder);
 
 	m_bufOverflowBytes.Clear();
+
 	return true;
 }
 
-int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, char *pCompressed, int maxCompressedBytes, bool bFinal) {
+int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, char *pCompressed, int maxCompressedBytes, bool bFinal)
+{
 	signed int nSamplesToUse; // edi@4
 	const __int16 *psRead; // ecx@4
 	int nSamples; // edi@5
@@ -75,7 +81,7 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 
 	if (m_bufOverflowBytes.TellPut()) {
 		m_bufOverflowBytes.Put(pUncompressedIn, 2 * nSamplesIn);
-			
+
 		psRead = (const __int16 *)m_bufOverflowBytes.Base();
 		nSamplesToUse = m_bufOverflowBytes.TellPut() / 2;
 	} else {
@@ -122,10 +128,11 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 		m_bufOverflowBytes.Put(&pUncompressedIn[2 * (nSamplesIn - nSamplesRemaining)], 2 * nSamplesRemaining);
 	}
 
-	if (bFinal)	{
+	if (bFinal)
+	{
 		ResetState();
-		if (pWritePosMax > pWritePos + 2)
-		{
+
+		if (pWritePosMax > pWritePos + 2) {
 			uint16 * pWriteEndFlag = (uint16*)pWritePos;
 			pWritePos += sizeof(uint16);
 			*pWriteEndFlag = 0xFFFF;
@@ -147,6 +154,7 @@ int VoiceEncoder_Silk::Decompress(const char *pCompressed, int compressedBytes, 
 
 	m_decControl.API_sampleRate = outSampleRate;
 	int nSamplesPerFrame = outSampleRate / 50;
+
 	if (compressedBytes <= 0) {
 		return 0;
 	}
@@ -157,7 +165,8 @@ int VoiceEncoder_Silk::Decompress(const char *pCompressed, int compressedBytes, 
 	pWritePos = pUncompressed;
 	pWritePosMax = &pUncompressed[maxUncompressedBytes];
 
-	while (pReadPos < pReadPosMax) {
+	while (pReadPos < pReadPosMax)
+	{
 		if (pReadPosMax - pReadPos < 2) {
 			break;
 		}
@@ -174,11 +183,14 @@ int VoiceEncoder_Silk::Decompress(const char *pCompressed, int compressedBytes, 
 			//DTX (discontinued transmission)
 			int numEmptySamples = nSamplesPerFrame;
 			short nSamples = (pWritePosMax - pWritePos) / 2;
+
 			if (nSamples < numEmptySamples) {
 				break;
 			}
+
 			memset(pWritePos, 0, numEmptySamples * 2);
 			pWritePos += numEmptySamples * 2;
+
 			continue;
 		}
 
@@ -189,9 +201,11 @@ int VoiceEncoder_Silk::Decompress(const char *pCompressed, int compressedBytes, 
 		do {
 			short nSamples = (pWritePosMax - pWritePos) / 2;
 			int decodeRes = SKP_Silk_SDK_Decode(m_pDecoder, &m_decControl, 0, (const unsigned char*)pReadPos, nPayloadSize, (__int16 *)pWritePos, &nSamples);
+
 			if (SKP_SILK_NO_ERROR != decodeRes) {
 				return (pWritePos - pUncompressed) / 2;
 			}
+
 			pWritePos += nSamples * sizeof(int16);
 		} while (m_decControl.moreInternalDecoderFrames);
 		pReadPos += nPayloadSize;

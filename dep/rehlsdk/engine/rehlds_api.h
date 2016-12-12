@@ -34,8 +34,8 @@
 #include "interface.h"
 #include "model.h"
 
-#define REHLDS_API_VERSION_MAJOR 2
-#define REHLDS_API_VERSION_MINOR 4
+#define REHLDS_API_VERSION_MAJOR 3
+#define REHLDS_API_VERSION_MINOR 0
 
 //Steam_NotifyClientConnect hook
 typedef IHookChain<qboolean, IGameClient*, const void*, unsigned int> IRehldsHook_Steam_NotifyClientConnect;
@@ -78,8 +78,8 @@ typedef IHookChain<qboolean, IGameClient*> IRehldsHook_Steam_NotifyBotConnect;
 typedef IHookChainRegistry<qboolean, IGameClient*> IRehldsHookRegistry_Steam_NotifyBotConnect;
 
 //SerializeSteamId
-typedef IVoidHookChain<USERID_t*> IRehldsHook_SerializeSteamId;
-typedef IVoidHookChainRegistry<USERID_t*> IRehldsHookRegistry_SerializeSteamId;
+typedef IVoidHookChain<USERID_t*, USERID_t*> IRehldsHook_SerializeSteamId;
+typedef IVoidHookChainRegistry<USERID_t*, USERID_t*> IRehldsHookRegistry_SerializeSteamId;
 
 //SV_CompareUserID hook
 typedef IHookChain<qboolean, USERID_t*, USERID_t*> IRehldsHook_SV_CompareUserID;
@@ -122,8 +122,8 @@ typedef IVoidHookChain<IGameClient *, struct packet_entities_s *, sizebuf_t *> I
 typedef IVoidHookChainRegistry<IGameClient *, struct packet_entities_s *, sizebuf_t *> IRehldsHookRegistry_SV_EmitEvents;
 
 //EV_PlayReliableEvent hook
-typedef IVoidHookChain<IGameClient *, int, short unsigned int, float, struct event_args_s *> IRehldsHook_EV_PlayReliableEvent;
-typedef IVoidHookChainRegistry<IGameClient *, int, short unsigned int, float, struct event_args_s *> IRehldsHookRegistry_EV_PlayReliableEvent;
+typedef IVoidHookChain<IGameClient *, int, unsigned short, float, struct event_args_s *> IRehldsHook_EV_PlayReliableEvent;
+typedef IVoidHookChainRegistry<IGameClient *, int, unsigned short, float, struct event_args_s *> IRehldsHookRegistry_EV_PlayReliableEvent;
 
 //SV_StartSound hook
 typedef IVoidHookChain<int , edict_t *, int, const char *, int, float, int, int> IRehldsHook_SV_StartSound;
@@ -156,6 +156,38 @@ typedef IVoidHookChainRegistry<int> IRehldsHookRegistry_SV_ActivateServer;
 //SV_WriteVoiceCodec hook
 typedef IVoidHookChain<sizebuf_t *> IRehldsHook_SV_WriteVoiceCodec;
 typedef IVoidHookChainRegistry<sizebuf_t *> IRehldsHookRegistry_SV_WriteVoiceCodec;
+
+//Steam_GSGetSteamID hook
+typedef IHookChain<uint64> IRehldsHook_Steam_GSGetSteamID;
+typedef IHookChainRegistry<uint64> IRehldsHookRegistry_Steam_GSGetSteamID;
+
+//SV_TransferConsistencyInfo hook
+typedef IHookChain<int> IRehldsHook_SV_TransferConsistencyInfo;
+typedef IHookChainRegistry<int> IRehldsHookRegistry_SV_TransferConsistencyInfo;
+
+//Steam_GSBUpdateUserData hook
+typedef IHookChain<bool, uint64, const char *, uint32> IRehldsHook_Steam_GSBUpdateUserData;
+typedef IHookChainRegistry<bool, uint64, const char *, uint32> IRehldsHookRegistry_Steam_GSBUpdateUserData;
+
+//Cvar_DirectSet hook
+typedef IVoidHookChain<struct cvar_s *, const char *> IRehldsHook_Cvar_DirectSet;
+typedef IVoidHookChainRegistry<struct cvar_s *, const char *> IRehldsHookRegistry_Cvar_DirectSet;
+
+//SV_EstablishTimeBase hook
+typedef IVoidHookChain<IGameClient *, struct usercmd_s *, int, int, int> IRehldsHook_SV_EstablishTimeBase;
+typedef IVoidHookChainRegistry<IGameClient *, struct usercmd_s *, int, int, int> IRehldsHookRegistry_SV_EstablishTimeBase;
+
+//SV_Spawn_f hook
+typedef IVoidHookChain<> IRehldsHook_SV_Spawn_f;
+typedef IVoidHookChainRegistry<> IRehldsHookRegistry_SV_Spawn_f;
+
+//SV_CreatePacketEntities hook
+typedef IHookChain<int, enum sv_delta_s, IGameClient *, struct packet_entities_s *, struct sizebuf_s *> IRehldsHook_SV_CreatePacketEntities;
+typedef IHookChainRegistry<int, enum sv_delta_s, IGameClient *, struct packet_entities_s *, struct sizebuf_s *> IRehldsHookRegistry_SV_CreatePacketEntities;
+
+//SV_EmitSound2 hook
+typedef IHookChain<bool, edict_t *, IGameClient *, int, const char*, float, float, int, int, int, const float*> IRehldsHook_SV_EmitSound2;
+typedef IHookChainRegistry<bool, edict_t *, IGameClient *, int, const char*, float, float, int, int, int, const float*> IRehldsHookRegistry_SV_EmitSound2;
 
 class IRehldsHookchains {
 public:
@@ -191,6 +223,14 @@ public:
 	virtual IRehldsHookRegistry_SV_DropClient* SV_DropClient() = 0;
 	virtual IRehldsHookRegistry_SV_ActivateServer* SV_ActivateServer() = 0;
 	virtual IRehldsHookRegistry_SV_WriteVoiceCodec* SV_WriteVoiceCodec() = 0;
+	virtual IRehldsHookRegistry_Steam_GSGetSteamID* Steam_GSGetSteamID() = 0;
+	virtual IRehldsHookRegistry_SV_TransferConsistencyInfo* SV_TransferConsistencyInfo() = 0;
+	virtual IRehldsHookRegistry_Steam_GSBUpdateUserData* Steam_GSBUpdateUserData() = 0;
+	virtual IRehldsHookRegistry_Cvar_DirectSet* Cvar_DirectSet() = 0;
+	virtual IRehldsHookRegistry_SV_EstablishTimeBase* SV_EstablishTimeBase() = 0;
+	virtual IRehldsHookRegistry_SV_Spawn_f* SV_Spawn_f() = 0;
+	virtual IRehldsHookRegistry_SV_CreatePacketEntities* SV_CreatePacketEntities() = 0;
+	virtual IRehldsHookRegistry_SV_EmitSound2* SV_EmitSound2() = 0;
 };
 
 struct RehldsFuncs_t {
@@ -217,7 +257,7 @@ struct RehldsFuncs_t {
 	cmd_source_t*(*GetCmdSource)();
 	void(*Log)(const char* prefix, const char* msg);
 	DLL_FUNCTIONS *(*GetEntityInterface)();
-	void(*EV_PlayReliableEvent)(IGameClient *cl, int entindex, short unsigned int eventindex, float delay, struct event_args_s *pargs);
+	void(*EV_PlayReliableEvent)(IGameClient *cl, int entindex, unsigned short eventindex, float delay, struct event_args_s *pargs);
 	int(*SV_LookupSoundIndex)(const char *sample);
 	void(*MSG_StartBitWriting)(sizebuf_t *buf);
 	void(*MSG_WriteBits)(uint32 data, int numbits);
@@ -235,6 +275,13 @@ struct RehldsFuncs_t {
 	void(*MSG_WriteString)(sizebuf_t *sb, const char *s);
 	void*(*GetPluginApi)(const char *name);
 	void(*RegisterPluginApi)(const char *name, void *impl);
+	qboolean(*SV_FileInConsistencyList)(const char *filename, struct consistency_s **ppconsist);
+	qboolean(*Steam_NotifyClientConnect)(IGameClient *cl, const void *pvSteam2Key, unsigned int ucbSteam2Key);
+	void(*Steam_NotifyClientDisconnect)(IGameClient* cl);
+	void(*SV_StartSound)(int recipients, edict_t *entity, int channel, const char *sample, int volume, float attenuation, int flags, int pitch);
+	bool(*SV_EmitSound2)(edict_t *entity, IGameClient *receiver, int channel, const char *sample, float volume, float attenuation, int flags, int pitch, int emitFlags, const float *pOrigin);
+	void(*SV_UpdateUserInfo)(IGameClient *pGameClient);
+	bool(*StripUnprintableAndSpace)(char *pch);
 };
 
 class IRehldsApi {

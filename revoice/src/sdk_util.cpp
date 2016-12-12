@@ -16,6 +16,7 @@
 *   without written permission from Valve LLC.
 *
 ****/
+
 /*
 
 ===== util.cpp ========================================================
@@ -23,6 +24,7 @@
   Utility code.  Really not optional after all.
 
 */
+
 #include "precompiled.h"
 
 //=========================================================

@@ -35,21 +35,21 @@ bool VoiceEncoder_Speex::Init(int quality, int &rawFrameSize, int &encodedFrameS
 	rawFrameSize = 320;
 
 	switch (quality) {
-	case 2:
-		m_Quality = 2;
-		break;
-	case 3:
-		m_Quality = 4;
-		break;
-	case 4:
-		m_Quality = 6;
-		break;
-	case 5:
-		m_Quality = 8;
-		break;
-	default:
-		m_Quality = 0;
-		break;
+		case 2:
+			m_Quality = 2;
+			break;
+		case 3:
+			m_Quality = 4;
+			break;
+		case 4:
+			m_Quality = 6;
+			break;
+		case 5:
+			m_Quality = 8;
+			break;
+		default:
+			m_Quality = 0;
+			break;
 	}
 
 	encodedFrameSize = ENCODED_FRAME_SIZE[m_Quality];
@@ -123,14 +123,12 @@ bool VoiceEncoder_Speex::InitStates()
 /* <ff6> ../engine/voice_codecs/speex/VoiceEncoder_Speex.cpp:193 */
 void VoiceEncoder_Speex::TermStates()
 {
-	if (m_EncoderState != NULL)
-	{
+	if (m_EncoderState != NULL) {
 		speex_encoder_destroy(m_EncoderState);
 		m_EncoderState = NULL;
 	}
 
-	if (m_DecoderState != NULL)
-	{
+	if (m_DecoderState != NULL) {
 		speex_encoder_destroy(m_DecoderState);
 		m_DecoderState = NULL;
 	}

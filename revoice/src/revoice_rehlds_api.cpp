@@ -14,6 +14,7 @@ bool Revoice_RehldsApi_TryInit(CSysModule* engineModule, char* failureReason)
 	}
 
 	CreateInterfaceFn ifaceFactory = Sys_GetFactory(engineModule);
+
 	if (!ifaceFactory) {
 		sprintf(failureReason, "Failed to locate interface factory in engine module\n");
 		return false;
@@ -21,6 +22,7 @@ bool Revoice_RehldsApi_TryInit(CSysModule* engineModule, char* failureReason)
 
 	int retCode = 0;
 	g_RehldsApi = (IRehldsApi*)ifaceFactory(VREHLDS_HLDS_API_VERSION, &retCode);
+
 	if (!g_RehldsApi) {
 		sprintf(failureReason, "Failed to locate retrieve rehlds api interface from engine module, return code is %d\n", retCode);
 		return false;
@@ -46,7 +48,6 @@ bool Revoice_RehldsApi_TryInit(CSysModule* engineModule, char* failureReason)
 
 	return true;
 }
-
 
 bool Revoice_RehldsApi_Init() {
 	char failReason[2048];

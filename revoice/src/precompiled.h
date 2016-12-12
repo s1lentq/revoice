@@ -13,7 +13,7 @@
 #include <dllapi.h>
 #include <meta_api.h>
 #include <h_export.h>
-#include "sdk_util.h"		// UTIL_LogPrintf, etc
+#include "sdk_util.h"			// UTIL_LogPrintf, etc
 
 #include "revoice_shared.h"
 #include "revoice_cfg.h"

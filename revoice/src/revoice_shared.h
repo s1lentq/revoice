@@ -53,4 +53,3 @@ extern uint32 crc32(const void* buf, unsigned int bufLen);
 extern bool Revoice_Load();
 extern bool Revoice_Utils_Init();
 extern void util_syserror(const char* fmt, ...);
-

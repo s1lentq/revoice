@@ -17,6 +17,7 @@ public:
 private:
 	int StreamDecode(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes) const;
 	int StreamEncode(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal) const;
+
 private:
 	VoiceEncoder_Silk* m_BackendCodec;
 };

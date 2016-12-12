@@ -26,4 +26,4 @@ protected:
 	int m_nRawSamples;
 	int m_nEncodedBytes;
 
-};/* size: 2072, cachelines: 33, members: 7 */
+}; /* size: 2072, cachelines: 33, members: 7 */

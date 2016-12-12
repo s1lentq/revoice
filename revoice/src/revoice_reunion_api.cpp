@@ -2,7 +2,8 @@
 
 IReunionApi* g_ReunionApi;
 
-bool Revoice_ReunionApi_Init() {
+bool Revoice_ReunionApi_Init()
+{
 	g_ReunionApi = (IReunionApi *)g_RehldsFuncs->GetPluginApi("reunion");
 
 	if (g_ReunionApi == NULL) {

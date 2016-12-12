@@ -1,30 +1,38 @@
 #include "precompiled.h"
 
-CSteamP2PCodec::CSteamP2PCodec(VoiceEncoder_Silk* backend) {
+CSteamP2PCodec::CSteamP2PCodec(VoiceEncoder_Silk* backend)
+{
 	m_BackendCodec = backend;
 }
 
-bool CSteamP2PCodec::Init(int quality) {
+bool CSteamP2PCodec::Init(int quality)
+{
 	return m_BackendCodec->Init(quality);
 }
 
-void CSteamP2PCodec::Release() {
+void CSteamP2PCodec::Release()
+{
 	m_BackendCodec->Release();
 	delete this;
 }
 
-bool CSteamP2PCodec::ResetState() {
+bool CSteamP2PCodec::ResetState()
+{
 	return m_BackendCodec->ResetState();
 }
 
-int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes) const {
+int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes) const
+{
 	const char* maxReadPos = pCompressed + compressedBytes;
 	const char* readPos = pCompressed;
-	while (readPos < maxReadPos) {
+
+	while (readPos < maxReadPos)
+	{
 		uint8 opcode = *(uint8*)readPos;
 		readPos++;
 
-		switch (opcode) {
+		switch (opcode)
+		{
 			case 0xB: //Set sampling rate
 				if (readPos + 2 > maxReadPos) {
 					return 0;
@@ -37,6 +45,7 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 				if (readPos + 2 > maxReadPos) {
 					return 0;
 				}
+
 				uint16 len = *(uint16*)readPos;
 				readPos += 2;
 
@@ -56,8 +65,10 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 	return 0; // no voice payload in the stream
 }
 
-int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal) const {
+int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal) const
+{
 	char* writePos = pCompressed;
+
 	if (maxCompressedBytes < 10) { // no room
 		return 0;
 	}
@@ -80,13 +91,15 @@ int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, c
 	return writePos - pCompressed;
 }
 
-int CSteamP2PCodec::Decompress(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes) {
+int CSteamP2PCodec::Decompress(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes)
+{
 	if (compressedBytes < 12) {
 		return 0;
 	}
 
 	uint32 computedChecksum = crc32(pCompressed, compressedBytes - 4);
 	uint32 wireChecksum = *(uint32*)(pCompressed + compressedBytes - 4);
+
 	if (computedChecksum != wireChecksum) {
 		return 0;
 	}
@@ -94,7 +107,8 @@ int CSteamP2PCodec::Decompress(const char *pCompressed, int compressedBytes, cha
 	return StreamDecode(pCompressed + 8, compressedBytes - 12, pUncompressed, maxUncompressedBytes);
 }
 
-int CSteamP2PCodec::Compress(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal) {
+int CSteamP2PCodec::Compress(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal)
+{
 	if (maxCompressedBytes < 12) { //no room
 		return 0;
 	}
@@ -110,6 +124,7 @@ int CSteamP2PCodec::Compress(const char *pUncompressedBytes, int nSamples, char 
 	if (encodeRes <= 0) {
 		return 0;
 	}
+
 	writePos += encodeRes;
 
 	uint32 cksum = crc32(pCompressed, writePos - pCompressed);
