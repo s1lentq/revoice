@@ -7,11 +7,15 @@
 #define LOG_PREFIX					"[REVOICE]: "
 
 #define MAX_SILK_DATA_LEN			650
+#define MAX_OPUS_DATA_LEN			960
 #define MAX_SPEEX_DATA_LEN			228
+
 #define MAX_SILK_VOICE_RATE			3800
+#define MAX_OPUS_VOICE_RATE			3100
 #define MAX_SPEEX_VOICE_RATE		2014
 
 #define SILK_VOICE_QUALITY			5
+#define OPUS_VOICE_QUALITY			5
 #define SPEEX_VOICE_QUALITY			5
 
 enum revoice_log_mode {
@@ -23,6 +27,7 @@ enum revoice_log_mode {
 enum revoice_codec_type {
 	vct_none,
 	vct_silk,
+	vct_opus,
 	vct_speex,
 };
 

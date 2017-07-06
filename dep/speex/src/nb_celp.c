@@ -1421,7 +1421,7 @@ int nb_decode(void *state, SpeexBits *bits, float *out)
 
       /* Signal synthesis */
       if (st->lpc_enh_enabled && SUBMODE(comb_gain)>0)
-         comb_filter(exc, sp, st->interp_qlpc, st->lpcSize, st->subframeSize,
+         comb_filter_(exc, sp, st->interp_qlpc, st->lpcSize, st->subframeSize,
                               pitch, pitch_gain, SUBMODE(comb_gain), st->comb_mem);
       if (st->lpc_enh_enabled)
       {

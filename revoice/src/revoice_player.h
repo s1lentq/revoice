@@ -11,6 +11,7 @@ private:
 	IGameClient* m_RehldsClient;
 	revoice_codec_type m_CodecType;
 	CSteamP2PCodec* m_SilkCodec;
+	CSteamP2PCodec* m_OpusCodec;
 	VoiceCodec_Frame* m_SpeexCodec;
 	int m_Protocol;
 	int m_VoiceRate;
@@ -34,6 +35,7 @@ public:
 	void SetCodecType(revoice_codec_type codecType)		{ m_CodecType = codecType; };
 	revoice_codec_type GetCodecType() const				{ return m_CodecType; }
 	CSteamP2PCodec* GetSilkCodec() const				{ return m_SilkCodec; }
+	CSteamP2PCodec* GetOpusCodec() const				{ return m_OpusCodec; }
 	VoiceCodec_Frame* GetSpeexCodec() const				{ return m_SpeexCodec;  }
 	IGameClient* GetClient() const						{ return m_RehldsClient; }
 };

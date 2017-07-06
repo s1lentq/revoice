@@ -20,6 +20,7 @@
 #include "revoice_rehlds_api.h"
 #include "VoiceEncoder_Silk.h"
 #include "VoiceEncoder_Speex.h"
+#include "VoiceEncoder_Opus.h"
 #include "voice_codec_frame.h"
 #include "SteamP2PCodec.h"
 #include "revoice_player.h"

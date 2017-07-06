@@ -112,6 +112,9 @@
     <ClInclude Include="..\version\appversion.h">
       <Filter>version</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\VoiceEncoder_Opus.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllapi.cpp">
@@ -170,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="..\version\version.cpp">
       <Filter>version</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VoiceEncoder_Opus.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

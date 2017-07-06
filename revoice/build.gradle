@@ -15,6 +15,7 @@ apply plugin: 'cpp'
 apply plugin: 'windows-resources'
 apply plugin: IccCompilerPlugin
 
+project.ext.dep_opus = project(':dep/opus')
 project.ext.dep_silk = project(':dep/silk')
 project.ext.dep_speex = project(':dep/speex')
 
@@ -111,6 +112,7 @@ model {
 						srcDirs "include", "version"
 					}
 
+					lib project: ':dep/opus', library: 'opus', linkage: 'static'
 					lib project: ':dep/silk', library: 'silk', linkage: 'static'
 					lib project: ':dep/speex', library: 'speex', linkage: 'static'
 				}
@@ -128,6 +130,7 @@ model {
 						srcDirs "include", "version"
 					}
 
+					lib project: ':dep/opus', library: 'opus', linkage: 'static'
 					lib project: ':dep/silk', library: 'silk', linkage: 'static'
 					lib project: ':dep/speex', library: 'speex', linkage: 'static'
 				}

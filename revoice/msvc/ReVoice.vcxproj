@@ -38,6 +38,7 @@
     <ClInclude Include="..\src\revoice_reunion_api.h" />
     <ClInclude Include="..\src\revoice_shared.h" />
     <ClInclude Include="..\src\SteamP2PCodec.h" />
+    <ClInclude Include="..\src\VoiceEncoder_Opus.h" />
     <ClInclude Include="..\src\VoiceEncoder_Silk.h" />
     <ClInclude Include="..\src\VoiceEncoder_Speex.h" />
     <ClInclude Include="..\src\voice_codec_frame.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="..\src\revoice_utils.cpp" />
     <ClCompile Include="..\src\sdk_util.cpp" />
     <ClCompile Include="..\src\SteamP2PCodec.cpp" />
+    <ClCompile Include="..\src\VoiceEncoder_Opus.cpp" />
     <ClCompile Include="..\src\VoiceEncoder_Silk.cpp" />
     <ClCompile Include="..\src\VoiceEncoder_Speex.cpp" />
     <ClCompile Include="..\src\voice_codec_frame.cpp" />
@@ -78,6 +80,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\dep\opus\msvc\Opus.vcxproj">
+      <Project>{b17b3098-0141-46ea-bd8e-b98e0c92a81a}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\dep\silk\msvc\Silk.vcxproj">
       <Project>{e1ac990e-c012-4167-80c2-84c98aa7070c}</Project>
     </ProjectReference>
@@ -100,18 +105,19 @@
     <ProjectGuid>{DAEFE371-7D77-4B72-A8A5-3CD3D1A55786}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ReVoice</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -139,7 +145,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;REVOICE_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/speex/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/opus/include/;$(SolutionDir)../dep/speex/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -149,7 +155,8 @@
       <ModuleDefinitionFile>revoice.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST "$(ProjectDir)PostBuild.bat" (CALL "$(ProjectDir)PostBuild.bat" "$(TargetDir)" "$(TargetName)" "$(TargetExt)" "$(ProjectDir)")</Command>
+      <Command>IF EXIST "$(ProjectDir)PostBuild.bat" (CALL "$(ProjectDir)PostBuild.bat" "$(TargetDir)" "$(TargetName)" "$(TargetExt)" "$(ProjectDir)")
+IF EXIST "$(ProjectDir)start_6153.bat" (CALL "$(ProjectDir)start_6153.bat")</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Automatic deployment script</Message>
@@ -181,7 +188,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;REVOICE_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/speex/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../src/;$(ProjectDir)../public/;$(ProjectDir)../version/;$(ProjectDir)../include/;$(SolutionDir)../dep/rehlsdk/common/;$(SolutionDir)../dep/rehlsdk/dlls/;$(SolutionDir)../dep/rehlsdk/engine/;$(SolutionDir)../dep/rehlsdk/public/;$(SolutionDir)../dep/silk/include/;$(SolutionDir)../dep/opus/include/;$(SolutionDir)../dep/speex/include/;$(SolutionDir)../dep/metamod/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>

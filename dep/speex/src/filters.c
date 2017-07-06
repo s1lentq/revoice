@@ -1,22 +1,22 @@
-/* Copyright (C) 2002 Jean-Marc Valin 
+/* Copyright (C) 2002 Jean-Marc Valin
    File: filters.c
    Various analysis/synthesis filters
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
    are met:
-   
+
    - Redistributions of source code must retain the above copyright
    notice, this list of conditions and the following disclaimer.
-   
+
    - Redistributions in binary form must reproduce the above copyright
    notice, this list of conditions and the following disclaimer in the
    documentation and/or other materials provided with the distribution.
-   
+
    - Neither the name of the Xiph.org Foundation nor the names of its
    contributors may be used to endorse or promote products derived from
    this software without specific prior written permission.
-   
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -129,7 +129,7 @@ void qmf_decomp(float *xx, float *aa, float *y1, float *y2, int N, int M, float 
    float *a;
    float *x;
    float *x2;
-   
+
    a = PUSH(stack, M, float);
    x = PUSH(stack, N+M-1, float);
    x2=x+M-1;
@@ -218,7 +218,7 @@ void comp_filter_mem_init (CombFilterMem *mem)
    mem->smooth_gain=1;
 }
 
-void comb_filter(
+void comb_filter_(
 float *exc,          /*decoded excitation*/
 float *new_exc,      /*enhanced excitation*/
 float *ak,           /*LPC filter coefs*/
