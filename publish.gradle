@@ -10,22 +10,25 @@ void _copyFile(String from, String to) {
 	GradleCppUtils.copyFile(project.file(from), project.file(to), false)
 }
 
-task publishPrepareFiles {
-	doLast {
-		def pubRootDir = project.file('publish/publishRoot')
-		if (pubRootDir.exists()) {
-			if (!pubRootDir.deleteDir()) {
-				throw new RuntimeException("Failed to delete ${pubRootDir}")
-			}
+task publishPrepareFiles << {
+	def pubRootDir = project.file('publish/publishRoot')
+	if (pubRootDir.exists()) {
+		if (!pubRootDir.deleteDir()) {
+			throw new RuntimeException("Failed to delete ${pubRootDir}")
 		}
+	}
 
-		pubRootDir.mkdirs()
+	pubRootDir.mkdirs()
 
-		project.file('publish/publishRoot/revoice/bin/win32').mkdirs()
-		project.file('publish/publishRoot/revoice/bin/linux32').mkdirs()
+	project.file('publish/publishRoot/revoice/bin/win32').mkdirs()
+	project.file('publish/publishRoot/revoice/bin/linux32').mkdirs()
 
-		_copyFileToDir('publish/revoice_mm.dll', 'publish/publishRoot/revoice/bin/win32/')
-		_copyFile('publish/librevoice_mm_i386.so', 'publish/publishRoot/revoice/bin/linux32/revoice_mm_i386.so')
+	_copyFileToDir('publish/revoice_mm.dll', 'publish/publishRoot/revoice/bin/win32/')
+	_copyFile('publish/librevoice_mm_i386.so', 'publish/publishRoot/revoice/bin/linux32/revoice_mm_i386.so')
+
+	copy {
+		from 'revoice/dist'
+		into 'publish/publishRoot/revoice'
 	}
 }
 

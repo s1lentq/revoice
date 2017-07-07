@@ -2,23 +2,18 @@
 
 #include "revoice_shared.h"
 
-#define REVOICE_CFG_FILE		"revoice.cfg"
-
-class CRevoiceConfig {
-private:
-	int m_LogMode;
-
-	bool parseCfgParam(const char* param, const char* value);
-
-public:
-	static CRevoiceConfig* createDefault();
-	static CRevoiceConfig* load(const char* fname);
-
-	bool hasLogMode(revoice_log_mode m) {
-		return (m_LogMode & m) == m;
-	}
-
+struct REVCmds {
+	const char *name;
+	void (*func)();
 };
 
-extern CRevoiceConfig* g_RevoiceConfig;
-extern bool Revoice_Cfg_LoadDefault();
+void Revoice_Exec_Config();
+bool Revoice_Init_Config();
+void Revoice_Init_Cvars();
+
+void Revoice_Cmds_Handler();
+void Cmd_REV_Version();
+
+extern cvar_t *g_pcv_sv_voiceenable;
+extern cvar_t *g_pcv_rev_hltv_codec;
+extern cvar_t *g_pcv_rev_default_codec;

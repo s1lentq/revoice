@@ -10,6 +10,11 @@ bool CSteamP2PCodec::Init(int quality)
 	return m_BackendCodec->Init(quality);
 }
 
+void CSteamP2PCodec::SetClient(IGameClient *client)
+{
+	m_Client = client;
+}
+
 void CSteamP2PCodec::Release()
 {
 	m_BackendCodec->Release();
@@ -28,13 +33,13 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 
 	while (readPos < maxReadPos)
 	{
-		uint8 opcode = *(uint8*)readPos;
+		PayLoadType opcode = *(PayLoadType *)readPos;
 		readPos++;
 
 		switch (opcode)
 		{
 			// Set sampling rate
-			case 0xB:
+			case PLT_SamplingRate:
 			{
 				if (readPos + 2 > maxReadPos) {
 					return 0;
@@ -43,12 +48,12 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 				break;
 			}
 			// Voice payload
-			case 0x04: // silk deprecated
-			case 0x05: // opus deprecated
+			case PLT_Silk: // silk deprecated
+			case PLT_OPUS: // opus deprecated
 			{
 				break;
 			}
-			case 0x06: // opus plc
+			case PLT_OPUS_PLC: // opus plc
 			{
 				if (readPos + 2 > maxReadPos) {
 					return 0;
@@ -67,11 +72,13 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 
 			// Invalid or unknown opcode
 			default:
+				LCPrintf(true, "CSteamP2PCodec::StreamDecode() called on client(%d) with unknown voice codec opcode (%d)\n", m_Client->GetId(), opcode);
 				return 0;
 		}
 	}
 
-	return 0; // no voice payload in the stream
+	// no voice payload in the stream
+	return 0;
 }
 
 int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal) const
@@ -82,11 +89,11 @@ int CSteamP2PCodec::StreamEncode(const char *pUncompressedBytes, int nSamples, c
 		return 0;
 	}
 
-	*(writePos++) = 0x0B; // Set sampling rate
+	*(writePos++) = PLT_SamplingRate; // Set sampling rate
 	*(uint16 *)writePos = 16000;
 	writePos += 2;
 
-	*(writePos++) = 0x04; // Voice payload
+	*(writePos++) = PLT_Silk; // Voice payload
 
 	int compressRes = m_BackendCodec->Compress(pUncompressedBytes, nSamples, writePos + 2, maxCompressedBytes - (1 + 2 + 1 + 2), bFinal);
 	if (compressRes == 0) {

@@ -2,19 +2,15 @@
 
 #include "interface.h"
 
-class IVoiceCodec : public IBaseInterface {
+class IGameClient;
+class IVoiceCodec: public IBaseInterface {
 protected:
-	virtual	~IVoiceCodec() {
-	}
-
+	virtual	~IVoiceCodec() {}
 	static const int BYTES_PER_SAMPLE = 2;
 
 public:
-
-
 	// Initialize the object. The uncompressed format is always 8-bit signed mono.
 	virtual bool Init(int quality) = 0;
-
 	virtual void Release() = 0;
 
 	// Compress the voice data.

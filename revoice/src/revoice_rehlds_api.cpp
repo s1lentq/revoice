@@ -1,12 +1,12 @@
 #include "precompiled.h"
 
-IRehldsApi* g_RehldsApi;
-const RehldsFuncs_t* g_RehldsFuncs;
-IRehldsHookchains* g_RehldsHookchains;
-IRehldsServerStatic* g_RehldsSvs;
-IRehldsServerData* g_RehldsSv;
+IRehldsApi *g_RehldsApi;
+const RehldsFuncs_t *g_RehldsFuncs;
+IRehldsHookchains *g_RehldsHookchains;
+IRehldsServerStatic *g_RehldsSvs;
+IRehldsServerData *g_RehldsSv;
 
-bool Revoice_RehldsApi_TryInit(CSysModule* engineModule, char* failureReason)
+bool Revoice_RehldsApi_TryInit(CSysModule *engineModule, char *failureReason)
 {
 	if (!engineModule) {
 		LCPrintf(true, "Failed to locate engine module\n");
@@ -53,16 +53,13 @@ bool Revoice_RehldsApi_Init() {
 	char failReason[2048];
 
 #ifdef WIN32
-	CSysModule* engineModule = Sys_LoadModule("swds.dll");
+	CSysModule *engineModule = Sys_LoadModule("swds.dll");
 	if (!Revoice_RehldsApi_TryInit(engineModule, failReason)) {
-		engineModule = Sys_LoadModule("filesystem_stdio.dll");
-		if (!Revoice_RehldsApi_TryInit(engineModule, failReason)) {
-			LCPrintf(true, "%s", failReason);
-			return false;
-		}
+		LCPrintf(true, "%s", failReason);
+		return false;
 	}
 #else
-	CSysModule* engineModule = Sys_LoadModule("engine_i486.so");
+	CSysModule *engineModule = Sys_LoadModule("engine_i486.so");
 	if (!Revoice_RehldsApi_TryInit(engineModule, failReason)) {
 		LCPrintf(true, "%s", failReason);
 		return false;

@@ -42,7 +42,7 @@ static META_FUNCTIONS gMetaFunctionTable = {
 	NULL,			// pfnGetEntityAPI				HL SDK; called before game DLL
 	NULL,			// pfnGetEntityAPI_Post			META; called after game DLL
 	&GetEntityAPI2, // pfnGetEntityAPI2				HL SDK2; called before game DLL
-	NULL,			// pfnGetEntityAPI2_Post		META; called after game DLL
+	&GetEntityAPI2_Post,			// pfnGetEntityAPI2_Post		META; called after game DLL
 	&GetNewDLLFunctions, // pfnGetNewDLLFunctions		HL SDK2; called before game DLL
 	NULL,			// pfnGetNewDLLFunctions_Post	META; called after game DLL
 	NULL,			// pfnGetEngineFunctions		META; called before HL engine
@@ -79,7 +79,7 @@ C_DLLEXPORT int Meta_Query(char * /*ifvers */, plugin_info_t **pPlugInfo, mutil_
 	// Get metamod utility function table.
 	gpMetaUtilFuncs = pMetaUtilFuncs;
 
-	return(TRUE);
+	return TRUE;
 }
 
 // Metamod attaching plugin to the server.
@@ -91,20 +91,20 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */, META_FUNCTIONS *pFunctionTa
 {
 	if(!pMGlobals) {
 		LOG_ERROR(PLID, "Meta_Attach called with null pMGlobals");
-		return(FALSE);
+		return FALSE;
 	}
 
 	gpMetaGlobals = pMGlobals;
 
 	if(!pFunctionTable) {
 		LOG_ERROR(PLID, "Meta_Attach called with null pFunctionTable");
-		return(FALSE);
+		return FALSE;
 	}
 
 	memcpy(pFunctionTable, &gMetaFunctionTable, sizeof(META_FUNCTIONS));
 	gpGamedllFuncs = pGamedllFuncs;
 
-	return Revoice_Load() ? (TRUE) : (FALSE);
+	return Revoice_Load() ? TRUE : FALSE;
 }
 
 // Metamod detaching plugin from the server.
@@ -112,31 +112,6 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME /* now */, META_FUNCTIONS *pFunctionTa
 // reason	(given) why detaching (refresh, console unload, forced unload, etc)
 C_DLLEXPORT int Meta_Detach(PLUG_LOADTIME /* now */, PL_UNLOAD_REASON /* reason */)
 {
-	return(TRUE);
-}
-
-bool Revoice_Load()
-{
-	if (!Revoice_Utils_Init())
-		return false;
-
-	/*if (!Revoice_Cfg_LoadDefault())
-		return false;*/
-
-	if (!Revoice_RehldsApi_Init()) {
-		LCPrintf(true, "Failed to locate REHLDS API\n");
-		return false;
-	}
-
-	if (!Revoice_ReunionApi_Init())
-		return false;
-
-	Revoice_Init_Players();
-
-	if (!Revoice_Main_Init()) {
-		LCPrintf(true, "Initialization failed\n");
-		return false;
-	}
-
-	return true;
+	Revoice_Main_DeInit();
+	return TRUE;
 }

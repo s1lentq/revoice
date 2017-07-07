@@ -1,129 +1,77 @@
 #include "precompiled.h"
 
-CRevoiceConfig* g_RevoiceConfig;
+char g_ExecConfigCmd[MAX_PATH];
+const char REVOICE_CFG_FILE[] = "revoice.cfg";
 
-bool Revoice_Cfg_LoadDefault()
+void Revoice_Exec_Config()
 {
-	CRevoiceConfig* cfg = CRevoiceConfig::load(REVOICE_CFG_FILE);
+	if (!g_ExecConfigCmd[0]) {
+		return;
+	}
 
-	if (!cfg)
-		return false;
+	g_engfuncs.pfnServerCommand(g_ExecConfigCmd);
+	g_engfuncs.pfnServerExecute();
+}
 
-	if (g_RevoiceConfig)
-		delete g_RevoiceConfig;
+bool Revoice_Init_Config()
+{
+	const char *pszGameDir = GET_GAME_INFO(PLID, GINFO_GAMEDIR);
+	const char *pszPluginDir = GET_PLUGIN_PATH(PLID);
 
-	g_RevoiceConfig = cfg;
+	char szRelativePath[MAX_PATH];
+	strncpy(szRelativePath, &pszPluginDir[strlen(pszGameDir) + 1], sizeof(szRelativePath) - 1);
+	szRelativePath[sizeof(szRelativePath) - 1] = '\0';
+	NormalizePath(szRelativePath);
 
+	char *pos = strrchr(szRelativePath, '/');
+	if (pos) {
+		*(pos + 1) = '\0';
+	}
+
+	snprintf(g_ExecConfigCmd, sizeof(g_ExecConfigCmd), "exec \"%s%s\"\n", szRelativePath, REVOICE_CFG_FILE);
 	return true;
 }
 
-CRevoiceConfig* CRevoiceConfig::load(const char* fname)
+cvar_t g_cv_rev_hltv_codec    = { "REV_HltvCodec", "opus", 0, 0.0f, nullptr };
+cvar_t g_cv_rev_default_codec = { "REV_DefaultCodec", "speex", 0, 0.0f, nullptr };
+cvar_t g_cv_rev_version       = { "revoice_version", APP_VERSION, FCVAR_SERVER, 0.0f, nullptr };
+
+cvar_t *g_pcv_rev_hltv_codec    = nullptr;
+cvar_t *g_pcv_rev_default_codec = nullptr;
+cvar_t *g_pcv_sv_voiceenable    = nullptr;
+
+void Revoice_Init_Cvars()
 {
-	char namebuf[MAX_PATH];
-	char gamedir[MAX_PATH];
+	g_engfuncs.pfnAddServerCommand("rev", Revoice_Cmds_Handler);
 
-	sprintf(namebuf, "./%s", fname);
+	g_engfuncs.pfnCvar_RegisterVariable(&g_cv_rev_version);
+	g_engfuncs.pfnCvar_RegisterVariable(&g_cv_rev_hltv_codec);
+	g_engfuncs.pfnCvar_RegisterVariable(&g_cv_rev_default_codec);
 
-	FILE *fl = fopen(namebuf, "r");
-
-	if (fl == NULL)
-	{
-		g_engfuncs.pfnGetGameDir(gamedir);
-		sprintf(namebuf, "./%s/%s", gamedir, fname);
-
-		fl = fopen(namebuf, "r");
-
-		if (fl == NULL) {
-			LCPrintf(true, "Failed to load config: can't find %s in server root or gamedir\n", fname);
-			return NULL;
-		}
-	}
-
-	char linebuf[2048];
-	int cline = 0;
-	CRevoiceConfig* cfg = createDefault();
-
-	while (fgets(linebuf, sizeof(linebuf), fl))
-	{
-		cline++;
-
-		char* l = trimbuf(linebuf);
-
-		if (l[0] == '\0' || l[0] == '#')
-			continue;
-
-		char* valSeparator = strchr(l, '=');
-
-		if (valSeparator == NULL) {
-			LCPrintf(true, "Config line parsing failed: missed '=' on line %d\n", cline);
-		}
-
-		*(valSeparator++) = 0;
-
-		char* param = trimbuf(l);
-		char* value = trimbuf(valSeparator);
-
-		if (!cfg->parseCfgParam(param, value)) {
-			LCPrintf(true, "Config line parsing failed: unknown parameter '%s' at line %d\n", param, cline);
-		}
-	}
-
-	if (fl)
-		fclose(fl);
-
-	return cfg;
+	g_pcv_sv_voiceenable = g_engfuncs.pfnCVarGetPointer("sv_voiceenable");
+	g_pcv_rev_hltv_codec = g_engfuncs.pfnCVarGetPointer(g_cv_rev_hltv_codec.name);
+	g_pcv_rev_default_codec = g_engfuncs.pfnCVarGetPointer(g_cv_rev_default_codec.name);
 }
 
-CRevoiceConfig* CRevoiceConfig::createDefault()
+REVCmds g_revoice_cmds[] = {
+	{ "version", Cmd_REV_Version }
+};
+
+void Revoice_Cmds_Handler()
 {
-	CRevoiceConfig* cfg = new CRevoiceConfig();
-
-	cfg->m_LogMode = rl_console | rl_logfile;
-
-	return cfg;
+	const char *pcmd = CMD_ARGV(1);
+	for (auto& cmds : g_revoice_cmds)
+	{
+		if (_stricmp(cmds.name, pcmd) == 0 && cmds.func) {
+			cmds.func();
+		}
+	}
 }
 
-bool CRevoiceConfig::parseCfgParam(const char* param, const char* value)
+void Cmd_REV_Version()
 {
-
-#define REV_CFG_PARSE_INT(paramName, field, _type, minVal, maxVal)			\
-	if (!strcasecmp(paramName, param)) {									\
-		int i = atoi(value);												\
-		if (i < minVal || i > maxVal) {										\
-			LCPrintf(true, "Invalid %s value '%s'\n", param, value);		\
-			return false;													\
-		}																	\
-		field = (_type) i;													\
-		return true;														\
-	}
-
-#define REV_CFG_PARSE_IP(paramName, field)									\
-	if (!strcasecmp(paramName, param)) {									\
-		field = inet_addr(value);											\
-		return true;														\
-	}
-
-#define REV_CFG_PARSE_BOOL(paramName, field)								\
-	if (!strcasecmp(paramName, param)) {									\
-		int i = atoi(value);												\
-		if (i < 0 || i > 1) {												\
-			LCPrintf(true, "Invalid %s value '%s'\n", param, value);		\
-			return false;													\
-		}																	\
-		field = i ? true : false;											\
-		return true;														\
-	}
-
-#define REV_CFG_PARSE_STR(paramName, field)									\
-	if (!strcasecmp(paramName, param)) {									\
-		strncpy(field, value, ARRAYSIZE(field) - 1);						\
-		field[ARRAYSIZE(field) - 1] = 0;									\
-		return true;														\
-	}
-
-	REV_CFG_PARSE_INT("LoggingMode", m_LogMode, int, rl_none, (rl_console | rl_logfile));
-
-	LCPrintf(true, " Config line parsing failed: unknown parameter '%s'\n", param);
-
-	return false;
+	// print version
+	g_engfuncs.pfnServerPrint("Revoice version: " APP_VERSION "\n");
+	g_engfuncs.pfnServerPrint("Build date: " APP_COMMIT_TIME " " APP_COMMIT_DATE "\n");
+	g_engfuncs.pfnServerPrint("Build from: " APP_COMMIT_URL APP_COMMIT_SHA "\n");
 }

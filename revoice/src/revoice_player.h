@@ -8,40 +8,49 @@
 
 class CRevoicePlayer {
 private:
-	IGameClient* m_RehldsClient;
-	revoice_codec_type m_CodecType;
-	CSteamP2PCodec* m_SilkCodec;
-	CSteamP2PCodec* m_OpusCodec;
-	VoiceCodec_Frame* m_SpeexCodec;
+	IGameClient *m_Client;
+	CodecType m_CodecType;
+	CSteamP2PCodec *m_SilkCodec;
+	CSteamP2PCodec *m_OpusCodec;
+	VoiceCodec_Frame *m_SpeexCodec;
 	int m_Protocol;
 	int m_VoiceRate;
 	int m_RequestId;
 	bool m_Connected;
+	bool m_HLTV;
 
 public:
 	CRevoicePlayer();
-	void Initialize(IGameClient* cl);
+	void Update();
+	void Initialize(IGameClient *cl);
 	void OnConnected();
 	void OnDisconnected();
 
 	void SetLastVoiceTime(double time);
 	void UpdateVoiceRate(double delta);
 	void IncreaseVoiceRate(int dataLength);
+	CodecType GetCodecTypeByString(const char *codec);
+	const char *GetCodecTypeToString();
 
 	int GetVoiceRate() const { return m_VoiceRate; }
 	int GetRequestId() const { return m_RequestId; }
 	bool IsConnected() const { return m_Connected; }
+	bool IsHLTV()      const { return m_HLTV;      }
 
-	void SetCodecType(revoice_codec_type codecType)		{ m_CodecType = codecType; };
-	revoice_codec_type GetCodecType() const				{ return m_CodecType; }
-	CSteamP2PCodec* GetSilkCodec() const				{ return m_SilkCodec; }
-	CSteamP2PCodec* GetOpusCodec() const				{ return m_OpusCodec; }
-	VoiceCodec_Frame* GetSpeexCodec() const				{ return m_SpeexCodec;  }
-	IGameClient* GetClient() const						{ return m_RehldsClient; }
+	static const char *m_szCodecType[];
+	void SetCodecType(CodecType codecType)     { m_CodecType = codecType; }
+
+	CodecType GetCodecType() const             { return m_CodecType; }
+	CSteamP2PCodec *GetSilkCodec() const       { return m_SilkCodec; }
+	CSteamP2PCodec *GetOpusCodec() const       { return m_OpusCodec; }
+	VoiceCodec_Frame *GetSpeexCodec() const    { return m_SpeexCodec;  }
+	IGameClient *GetClient() const             { return m_Client; }
 };
 
 extern CRevoicePlayer g_Players[MAX_PLAYERS];
 
-extern void Revoice_Init_Players();
-extern CRevoicePlayer* GetPlayerByClientPtr(IGameClient* cl);
-extern CRevoicePlayer* GetPlayerByEdict(const edict_t* ed);
+CRevoicePlayer *GetPlayerByClientPtr(IGameClient *cl);
+CRevoicePlayer *GetPlayerByEdict(const edict_t *ed);
+
+void Revoice_Init_Players();
+void Revoice_Update_Players();

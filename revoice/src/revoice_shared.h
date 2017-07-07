@@ -24,7 +24,7 @@ enum revoice_log_mode {
 	rl_logfile = 2,
 };
 
-enum revoice_codec_type {
+enum CodecType {
 	vct_none,
 	vct_silk,
 	vct_opus,
@@ -52,9 +52,11 @@ T clamp(T a, T min, T max) {
 }
 
 extern char* trimbuf(char *str);
+extern void NormalizePath(char *path);
+extern bool IsFileExists(const char *path);
 extern void LCPrintf(bool critical, const char *fmt, ...);
-extern uint32 crc32(const void* buf, unsigned int bufLen);
+extern uint32 crc32(const void *buf, unsigned int bufLen);
 
 extern bool Revoice_Load();
 extern bool Revoice_Utils_Init();
-extern void util_syserror(const char* fmt, ...);
+extern void util_syserror(const char *fmt, ...);

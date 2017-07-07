@@ -2,8 +2,8 @@
 
 VoiceEncoder_Silk::VoiceEncoder_Silk()
 {
-	m_pEncoder = NULL;
-	m_pDecoder = NULL;
+	m_pEncoder = nullptr;
+	m_pDecoder = nullptr;
 	m_targetRate_bps = 25000;
 	m_packetLoss_perc = 0;
 }
@@ -12,12 +12,12 @@ VoiceEncoder_Silk::~VoiceEncoder_Silk()
 {
 	if (m_pEncoder) {
 		free(m_pEncoder);
-		m_pEncoder = NULL;
+		m_pEncoder = nullptr;
 	}
 
 	if (m_pDecoder) {
 		free(m_pDecoder);
-		m_pDecoder = NULL;
+		m_pDecoder = nullptr;
 	}
 }
 
@@ -97,7 +97,7 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 
 	while (nSamples > 0)
 	{
-		int16* pWritePayloadSize = (int16*)pWritePos;
+		int16 *pWritePayloadSize = (int16 *)pWritePos;
 		pWritePos += sizeof(int16); //leave 2 bytes for the frame size (will be written after encoding)
 
 		int originalNBytes = (pWritePosMax - pWritePos > 0xFFFF) ? -1 : (pWritePosMax - pWritePos);
@@ -111,11 +111,11 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 		this->m_encControl.packetSize = 20 * (inSampleRate / 1000);
 		this->m_encControl.packetLossPercentage = this->m_packetLoss_perc;
 		this->m_encControl.bitRate = (m_targetRate_bps >= 0) ? m_targetRate_bps : 0;
-			
+
 		nSamples -= nSamplesToEncode;
-		
+
 		int16 nBytes = originalNBytes;
-		int res = SKP_Silk_SDK_Encode(this->m_pEncoder, &this->m_encControl, psRead, nSamplesToEncode, (unsigned char*)pWritePos, &nBytes);
+		int res = SKP_Silk_SDK_Encode(this->m_pEncoder, &this->m_encControl, psRead, nSamplesToEncode, (unsigned char *)pWritePos, &nBytes);
 		*pWritePayloadSize = nBytes; //write frame size
 
 		pWritePos += nBytes;
@@ -133,7 +133,7 @@ int VoiceEncoder_Silk::Compress(const char *pUncompressedIn, int nSamplesIn, cha
 		ResetState();
 
 		if (pWritePosMax > pWritePos + 2) {
-			uint16 * pWriteEndFlag = (uint16*)pWritePos;
+			uint16 *pWriteEndFlag = (uint16*)pWritePos;
 			pWritePos += sizeof(uint16);
 			*pWriteEndFlag = 0xFFFF;
 		}

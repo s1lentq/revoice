@@ -1,26 +1,38 @@
 #include "precompiled.h"
 
+const char *CRevoicePlayer::m_szCodecType[] = {
+	"none",
+	"silk",
+	"opus",
+	"speex"
+};
+
 CRevoicePlayer g_Players[MAX_PLAYERS];
 
 CRevoicePlayer::CRevoicePlayer()
 {
 	m_CodecType = vct_none;
 	m_SpeexCodec = new VoiceCodec_Frame(new VoiceEncoder_Speex());
-	m_SilkCodec = new CSteamP2PCodec(new VoiceEncoder_Silk());
-	m_OpusCodec = new CSteamP2PCodec(new VoiceEncoder_Opus());
+	m_SilkCodec  = new CSteamP2PCodec(new VoiceEncoder_Silk());
+	m_OpusCodec  = new CSteamP2PCodec(new VoiceEncoder_Opus());
 
 	m_SpeexCodec->Init(SPEEX_VOICE_QUALITY);
-	m_SilkCodec->Init(SILK_VOICE_QUALITY);
-	m_OpusCodec->Init(OPUS_VOICE_QUALITY);
+	m_SilkCodec ->Init(SILK_VOICE_QUALITY);
+	m_OpusCodec ->Init(OPUS_VOICE_QUALITY);
 
-	m_RehldsClient = NULL;
 	m_Protocol = 0;
+	m_HLTV = false;
 	m_Connected = false;
+	m_Client = nullptr;
 }
 
-void CRevoicePlayer::Initialize(IGameClient* cl)
+void CRevoicePlayer::Initialize(IGameClient *cl)
 {
-	m_RehldsClient = cl;
+	m_Client = cl;
+
+	m_SpeexCodec->SetClient(cl);
+	m_SilkCodec ->SetClient(cl);
+	m_OpusCodec ->SetClient(cl);
 }
 
 void CRevoicePlayer::OnConnected()
@@ -31,8 +43,7 @@ void CRevoicePlayer::OnConnected()
 		return;
 	}
 
-	int protocol = g_ReunionApi->GetClientProtocol(m_RehldsClient->GetId());
-
+	int protocol = g_ReunionApi->GetClientProtocol(m_Client->GetId());
 	if (protocol != 47 && protocol != 48) {
 		return;
 	}
@@ -43,19 +54,24 @@ void CRevoicePlayer::OnConnected()
 	m_SpeexCodec->ResetState();
 
 	// default codec
-	m_CodecType = vct_speex;
+	m_CodecType = GetCodecTypeByString(g_pcv_rev_default_codec->string);
 	m_VoiceRate = 0;
 	m_Connected = true;
 	m_RequestId = MAKE_REQUESTID(PLID);
 	m_Protocol = protocol;
 
-	if (m_Protocol == 48) {
-		g_engfuncs.pfnQueryClientCvarValue2(m_RehldsClient->GetEdict(), "sv_version", m_RequestId);
+	if (g_ReunionApi->GetClientAuthtype(m_Client->GetId()) == DP_AUTH_HLTV) {
+		m_CodecType = GetCodecTypeByString(g_pcv_rev_hltv_codec->string);
+		m_HLTV = true;
+	}
+	else if (m_Protocol == 48) {
+		g_engfuncs.pfnQueryClientCvarValue2(m_Client->GetEdict(), "sv_version", m_RequestId);
 	}
 }
 
 void CRevoicePlayer::OnDisconnected()
 {
+	m_HLTV = false;
 	m_Connected = false;
 	m_Protocol = 0;
 	m_CodecType = vct_none;
@@ -63,10 +79,31 @@ void CRevoicePlayer::OnDisconnected()
 	m_RequestId = 0;
 }
 
+void CRevoicePlayer::Update()
+{
+	m_CodecType = GetCodecTypeByString(((m_HLTV) ?
+		g_pcv_rev_hltv_codec : g_pcv_rev_default_codec)->string);
+
+	m_RequestId = MAKE_REQUESTID(PLID);
+
+	if (m_Protocol == 48) {
+		g_engfuncs.pfnQueryClientCvarValue2(m_Client->GetEdict(), "sv_version", m_RequestId);
+	}
+}
+
+void Revoice_Update_Players()
+{
+	int maxclients = g_RehldsSvs->GetMaxClients();
+	for (int i = 0; i < maxclients; i++) {
+		if (g_Players[i].IsConnected()) {
+			g_Players[i].Update();
+		}
+	}
+}
+
 void Revoice_Init_Players()
 {
 	int maxclients = g_RehldsSvs->GetMaxClients();
-
 	for (int i = 0; i < maxclients; i++) {
 		g_Players[i].Initialize(g_RehldsSvs->GetClient(i));
 	}
@@ -90,8 +127,8 @@ CRevoicePlayer *GetPlayerByEdict(const edict_t *ed)
 
 void CRevoicePlayer::SetLastVoiceTime(double time)
 {
-	UpdateVoiceRate(time - m_RehldsClient->GetLastVoiceTime());
-	m_RehldsClient->SetLastVoiceTime(time);
+	UpdateVoiceRate(time - m_Client->GetLastVoiceTime());
+	m_Client->SetLastVoiceTime(time);
 }
 
 void CRevoicePlayer::UpdateVoiceRate(double delta)
@@ -100,20 +137,17 @@ void CRevoicePlayer::UpdateVoiceRate(double delta)
 	{
 		switch (m_CodecType)
 		{
-			case vct_silk:
-				m_VoiceRate -= int(delta * MAX_SILK_VOICE_RATE) + MAX_SILK_DATA_LEN;
-				break;
-
-			case vct_opus:
-				m_VoiceRate -= int(delta * MAX_OPUS_VOICE_RATE) + MAX_OPUS_DATA_LEN;
-				break;
-
-			case vct_speex:
-				m_VoiceRate -= int(delta * MAX_SPEEX_VOICE_RATE) + MAX_SPEEX_DATA_LEN;
-				break;
-
-			default:
-				break;
+		case vct_silk:
+			m_VoiceRate -= int(delta * MAX_SILK_VOICE_RATE) + MAX_SILK_DATA_LEN;
+			break;
+		case vct_opus:
+			m_VoiceRate -= int(delta * MAX_OPUS_VOICE_RATE) + MAX_OPUS_DATA_LEN;
+			break;
+		case vct_speex:
+			m_VoiceRate -= int(delta * MAX_SPEEX_VOICE_RATE) + MAX_SPEEX_DATA_LEN;
+			break;
+		default:
+			break;
 		}
 
 		if (m_VoiceRate < 0)
@@ -121,7 +155,27 @@ void CRevoicePlayer::UpdateVoiceRate(double delta)
 	}
 }
 
+const char *CRevoicePlayer::GetCodecTypeToString()
+{
+	return m_szCodecType[ m_CodecType ];
+}
+
 void CRevoicePlayer::IncreaseVoiceRate(int dataLength)
 {
 	m_VoiceRate += dataLength;
+}
+
+CodecType CRevoicePlayer::GetCodecTypeByString(const char *codec)
+{
+#define REV_CODEC(know_codec)\
+	if (_stricmp(codec, #know_codec) == 0) {\
+		return vct_##know_codec;\
+	}\
+
+	REV_CODEC(opus);
+	REV_CODEC(silk);
+	REV_CODEC(speex);
+#undef REV_CODEC
+
+	return vct_none;
 }
