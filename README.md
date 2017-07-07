@@ -1,1 +1,1 @@
-# revoice
+# Revoice [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:Revoice_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=Revoice_Publish&guest=1) [![Download](https://camo.githubusercontent.com/089706eb2571f262bb23afc9434d85d52a423cc3/687474703a2f2f7265686c64732e6f72672f76657273696f6e2f7265766f6963652e737667)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=Revoice_Publish&buildId=lastSuccessful)

@@ -42,10 +42,8 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 					'WIN32': null,
 					'_MBCS': null,
 					'NDEBUG': null,
-					'NOMINMAX': null
 				]
 			),
-
 			linkerOptions: new MsvcToolchainConfig.LinkerOptions(
 				linkTimeCodeGenKind: LinkTimeCodeGenKind.USE_LTCG,
 				errorReportingMode: ErrorReporting.NO_ERROR_REPORT,
@@ -55,13 +53,11 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 				enableCOMDATFolding: true,
 				generateDebugInfo: true,
 				dataExecutionPrevention: true,
-				randomizedBaseAddress: true
+				randomizedBaseAddress: true,
 			),
-
 			librarianOptions: new MsvcToolchainConfig.LibrarianOptions(
 				linkTimeCodeGenKind: LinkTimeCodeGenKind.USE_LTCG
 			),
-
 			generatePdb: true
 		)
 	} else {
@@ -93,10 +89,8 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 					'WIN32': null,
 					'_MBCS': null,
 					'_DEBUG': null,
-					'NOMINMAX': null,
 				]
 			),
-
 			linkerOptions: new MsvcToolchainConfig.LinkerOptions(
 				linkTimeCodeGenKind: LinkTimeCodeGenKind.DEFAULT,
 				errorReportingMode: ErrorReporting.NO_ERROR_REPORT,
@@ -108,11 +102,9 @@ rootProject.ext.createMsvcConfig = { boolean release, BinaryKind binKind ->
 				dataExecutionPrevention: true,
 				randomizedBaseAddress: true
 			),
-
 			librarianOptions: new MsvcToolchainConfig.LibrarianOptions(
 				linkTimeCodeGenKind: LinkTimeCodeGenKind.USE_LTCG
 			),
-
 			generatePdb: true
 		)
 

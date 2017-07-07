@@ -179,7 +179,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReVoice.def" />
+    <None Include="revoice.def" />
     <None Include="..\version\appversion.vm">
       <Filter>version</Filter>
     </None>
@@ -188,6 +188,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ReVoice.rc" />
+    <ResourceCompile Include="revoice.rc" />
   </ItemGroup>
 </Project>

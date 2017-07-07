@@ -96,15 +96,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </None>
-    <None Include="ReVoice.def" />
+    <None Include="revoice.def" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ReVoice.rc" />
+    <ResourceCompile Include="revoice.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DAEFE371-7D77-4B72-A8A5-3CD3D1A55786}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ReVoice</RootNamespace>
+    <RootNamespace>revoice</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -53,8 +53,8 @@ static META_FUNCTIONS gMetaFunctionTable = {
 plugin_info_t Plugin_info = {
 	META_INTERFACE_VERSION,	// ifvers
 	"Revoice",	// name
-	APP_VERSION_STRD,	// version
-	APP_VERSION_YMD_STR,	// date
+	APP_VERSION,	// version
+	APP_COMMIT_DATE,	// date
 	"The Legion",	// author
 	"",	// url
 	"REVOICE",	// logtag, all caps please

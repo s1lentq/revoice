@@ -58,7 +58,7 @@ void setupToolchain(NativeBinarySpec b) {
 			enabled: true,
 			pchSourceSet: 'revoice_pch'
 		)
-		cfg.compilerOptions.languageStandard = 'c++0x'
+		cfg.compilerOptions.languageStandard = 'c++11'
 		cfg.defines([
 				'_stricmp': 'strcasecmp',
 				'_strnicmp': 'strncasecmp',
@@ -137,7 +137,7 @@ model {
 				rc {
 					source {
 						srcDir "msvc"
-						include "ReVoice.rc"
+						include "revoice.rc"
 					}
 					exportedHeaders {
 						srcDirs "msvc"
@@ -158,7 +158,7 @@ afterEvaluate {
 		Tool linker = binary.linker
 
 		if (GradleCppUtils.windows) {
-			linker.args "/DEF:${projectDir}\\msvc\\ReVoice.def"
+			linker.args "/DEF:${projectDir}\\msvc\\revoice.def"
 		}
 	}
 }
@@ -176,17 +176,29 @@ tasks.clean.doLast {
 task generateAppVersion {
 
 	RevoiceVersionInfo verInfo = (RevoiceVersionInfo) rootProject.revoiceVersionInfo
-	def tplversionFile = project.file('version/appversion.vm')
-	def versionFile = project.file('version/appversion.h')
+	def tplFile = project.file('version/appversion.vm')
+	def renderedFile = project.file('version/appversion.h')
 
-	inputs.file tplversionFile
+	// check to up-to-date
+	inputs.file tplFile
 	inputs.file project.file('gradle.properties')
-	outputs.file versionFile
+	outputs.file renderedFile
+
+	// this will ensure that this task is redone when the versions change
+	inputs.property('version', rootProject.version)
+	inputs.property('commitDate', verInfo.asCommitDate())
+
+	println "##teamcity[buildNumber '" + verInfo.asMavenVersion(false) + "']";
 
 	doLast {
+		def templateCtx = [
+			verInfo: verInfo
+		]
 
-		def versionContent = VelocityUtils.renderTemplate(tplversionFile, verInfo)
-		versionFile.delete()
-		versionFile.write(versionContent, 'utf-8')
+		def content = VelocityUtils.renderTemplate(tplFile, templateCtx)
+		renderedFile.delete()
+		renderedFile.write(content, 'utf-8')
+
+		println 'The current Revoice maven version is ' + rootProject.version + ', url: (' + verInfo.commitURL + '' + verInfo.commitSHA + ')';
 	}
 }
