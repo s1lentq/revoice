@@ -80,11 +80,9 @@ void SV_ParseVoiceData_emu(IGameClient *cl)
 
 	char transcodedBuf[4096];
 
-	char *opusData = nullptr;
 	char *silkData = nullptr;
 	char *speexData = nullptr;
 
-	int opusDataLen = 0;
 	int silkDataLen = 0;
 	int speexDataLen = 0;
 
@@ -105,9 +103,9 @@ void SV_ParseVoiceData_emu(IGameClient *cl)
 		if (nDataLength > MAX_OPUS_DATA_LEN || srcPlayer->GetVoiceRate() > MAX_OPUS_VOICE_RATE)
 			return;
 
-		opusData = chReceived; opusDataLen = nDataLength;
+		silkData = chReceived; silkDataLen = nDataLength;
 		speexData = transcodedBuf;
-		speexDataLen = TranscodeVoice(srcPlayer, opusData, opusDataLen, srcPlayer->GetOpusCodec(), srcPlayer->GetSpeexCodec(), transcodedBuf, sizeof(transcodedBuf));
+		speexDataLen = TranscodeVoice(srcPlayer, silkData, silkDataLen, srcPlayer->GetOpusCodec(), srcPlayer->GetSpeexCodec(), transcodedBuf, sizeof(transcodedBuf));
 		break;
 	}
 	case vct_speex:

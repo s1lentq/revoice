@@ -72,7 +72,7 @@ int CSteamP2PCodec::StreamDecode(const char *pCompressed, int compressedBytes, c
 
 			// Invalid or unknown opcode
 			default:
-				LCPrintf(true, "CSteamP2PCodec::StreamDecode() called on client(%d) with unknown voice codec opcode (%d)\n", m_Client->GetId(), opcode);
+				// LCPrintf(true, "CSteamP2PCodec::StreamDecode() called on client(%d) with unknown voice codec opcode (%d)\n", m_Client->GetId(), opcode);
 				return 0;
 		}
 	}
