@@ -43,3 +43,35 @@ void UTIL_LogPrintf(char *fmt, ...)
 	// Print to server console
 	ALERT(at_logged, "%s", string);
 }
+
+char *UTIL_VarArgs(char *format, ...)
+{
+	va_list argptr;
+	static char string[1024];
+
+	va_start(argptr, format);
+	vsprintf(string, format, argptr);
+	va_end(argptr);
+
+	return string;
+}
+
+void UTIL_ServerPrintf(const char *fmt, ...)
+{
+	// Check is null, test the demo started before than searches pointer to refs
+	if (&g_engfuncs == nullptr || g_engfuncs.pfnServerPrint == nullptr)
+		return;
+
+	static char string[1024];
+	va_list ap;
+	va_start(ap, fmt);
+	vsnprintf(string, sizeof(string), fmt, ap);
+	va_end(ap);
+
+	if (strlen(string) < sizeof(string) - 2)
+		strcat(string, "\n");
+	else
+		string[strlen(string) - 1] = '\n';
+
+	SERVER_PRINT(string);
+}

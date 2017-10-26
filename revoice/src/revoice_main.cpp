@@ -216,16 +216,6 @@ void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec *chain, sizebuf_t 
 	}
 }
 
-void Cvar_DirectSet_hooked(IRehldsHook_Cvar_DirectSet *chain, cvar_t *var, const char *value)
-{
-	chain->callNext(var, value);
-
-	if (g_pcv_rev_hltv_codec == var
-		|| g_pcv_rev_default_codec == var) {
-		Revoice_Update_Players();
-	}
-}
-
 bool Revoice_Load()
 {
 	if (!Revoice_Utils_Init())
@@ -256,7 +246,6 @@ bool Revoice_Main_Init()
 	g_RehldsHookchains->SV_DropClient()->registerHook(&SV_DropClient_hook, HC_PRIORITY_DEFAULT + 1);
 	g_RehldsHookchains->HandleNetCommand()->registerHook(&Rehlds_HandleNetCommand, HC_PRIORITY_DEFAULT + 1);
 	g_RehldsHookchains->SV_WriteVoiceCodec()->registerHook(&SV_WriteVoiceCodec_hooked, HC_PRIORITY_DEFAULT + 1);
-	g_RehldsHookchains->Cvar_DirectSet()->registerHook(&Cvar_DirectSet_hooked, HC_PRIORITY_DEFAULT + 1);
 
 	return true;
 }
@@ -266,5 +255,6 @@ void Revoice_Main_DeInit()
 	g_RehldsHookchains->SV_DropClient()->unregisterHook(&SV_DropClient_hook);
 	g_RehldsHookchains->HandleNetCommand()->unregisterHook(&Rehlds_HandleNetCommand);
 	g_RehldsHookchains->SV_WriteVoiceCodec()->unregisterHook(&SV_WriteVoiceCodec_hooked);
-	g_RehldsHookchains->Cvar_DirectSet()->unregisterHook(&Cvar_DirectSet_hooked);
+
+	Revoice_DeInit_Cvars();
 }

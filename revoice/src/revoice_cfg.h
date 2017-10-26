@@ -10,8 +10,11 @@ struct REVCmds {
 void Revoice_Exec_Config();
 bool Revoice_Init_Config();
 void Revoice_Init_Cvars();
+void Revoice_DeInit_Cvars();
 
 void Revoice_Cmds_Handler();
+
+void Cmd_REV_Status();
 void Cmd_REV_Version();
 
 extern cvar_t *g_pcv_sv_voiceenable;

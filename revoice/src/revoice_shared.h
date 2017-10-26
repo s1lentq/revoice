@@ -36,21 +36,6 @@ enum svc_messages {
 	svc_voicedata = 53
 };
 
-template <typename T>
-T _min(T a, T b) {
-	return (a < b) ? a : b;
-}
-
-template <typename T>
-T _max(T a, T b) {
-	return (a < b) ? b : a;
-}
-
-template <typename T>
-T clamp(T a, T min, T max) {
-	return (a > max) ? max : (a < min) ? min : a;
-}
-
 extern char* trimbuf(char *str);
 extern void NormalizePath(char *path);
 extern bool IsFileExists(const char *path);

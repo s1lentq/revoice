@@ -32,6 +32,7 @@ public:
 	CodecType GetCodecTypeByString(const char *codec);
 	const char *GetCodecTypeToString();
 
+	int GetProtocol()  const { return m_Protocol;  }
 	int GetVoiceRate() const { return m_VoiceRate; }
 	int GetRequestId() const { return m_RequestId; }
 	bool IsConnected() const { return m_Connected; }
@@ -53,4 +54,5 @@ CRevoicePlayer *GetPlayerByClientPtr(IGameClient *cl);
 CRevoicePlayer *GetPlayerByEdict(const edict_t *ed);
 
 void Revoice_Init_Players();
-void Revoice_Update_Players();
+void Revoice_Update_Players(const char *pszNewValue);
+void Revoice_Update_Hltv(const char *pszNewValue);

@@ -59,7 +59,7 @@ int VoiceCodec_Frame::Compress(const char *pUncompressedBytes, int nSamples, cha
 	}
 
 	// Store the remaining samples.
-	int nNewSamples = _min(nSamples, _min(m_nRawSamples - m_nEncodeBufferSamples, m_nRawSamples));
+	int nNewSamples = min(nSamples, min(m_nRawSamples - m_nEncodeBufferSamples, m_nRawSamples));
 	if (nNewSamples) {
 		memcpy(&m_EncodeBuffer[m_nEncodeBufferSamples], &pUncompressed[nSamples - nNewSamples], nNewSamples * BYTES_PER_SAMPLE);
 		m_nEncodeBufferSamples += nNewSamples;

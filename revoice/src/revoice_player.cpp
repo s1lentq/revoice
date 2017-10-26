@@ -81,23 +81,16 @@ void CRevoicePlayer::OnDisconnected()
 
 void CRevoicePlayer::Update()
 {
-	m_CodecType = GetCodecTypeByString(((m_HLTV) ?
-		g_pcv_rev_hltv_codec : g_pcv_rev_default_codec)->string);
+	if (m_HLTV) {
+		m_CodecType = GetCodecTypeByString(g_pcv_rev_hltv_codec->string);
+		return;
+	}
 
+	m_CodecType = GetCodecTypeByString(g_pcv_rev_default_codec->string);
 	m_RequestId = MAKE_REQUESTID(PLID);
 
 	if (m_Protocol == 48) {
 		g_engfuncs.pfnQueryClientCvarValue2(m_Client->GetEdict(), "sv_version", m_RequestId);
-	}
-}
-
-void Revoice_Update_Players()
-{
-	int maxclients = g_RehldsSvs->GetMaxClients();
-	for (int i = 0; i < maxclients; i++) {
-		if (g_Players[i].IsConnected()) {
-			g_Players[i].Update();
-		}
 	}
 }
 
@@ -106,6 +99,27 @@ void Revoice_Init_Players()
 	int maxclients = g_RehldsSvs->GetMaxClients();
 	for (int i = 0; i < maxclients; i++) {
 		g_Players[i].Initialize(g_RehldsSvs->GetClient(i));
+	}
+}
+
+void Revoice_Update_Players(const char *pszNewValue)
+{
+	for (int i = 0; i < g_RehldsSvs->GetMaxClients(); i++) {
+		auto plr = &g_Players[i];
+		if (plr->IsConnected()) {
+			plr->Update();
+		}
+	}
+}
+
+void Revoice_Update_Hltv(const char *pszNewValue)
+{
+	int maxclients = g_RehldsSvs->GetMaxClients();
+	for (int i = 0; i < g_RehldsSvs->GetMaxClients(); i++) {
+		auto plr = &g_Players[i];
+		if (plr->IsConnected() && plr->IsHLTV()) {
+			plr->Update();
+		}
 	}
 }
 
