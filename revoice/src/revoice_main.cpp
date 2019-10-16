@@ -105,7 +105,12 @@ void SV_ParseVoiceData_emu(IGameClient *cl)
 
 		silkData = chReceived; silkDataLen = nDataLength;
 		speexData = transcodedBuf;
-		speexDataLen = TranscodeVoice(srcPlayer, silkData, silkDataLen, srcPlayer->GetOpusCodec(), srcPlayer->GetSpeexCodec(), transcodedBuf, sizeof(transcodedBuf));
+
+		int numDecodedSamples = TranscodeVoice(srcPlayer, silkData, silkDataLen, srcPlayer->GetOpusCodec(), srcPlayer->GetSpeexCodec(), transcodedBuf, sizeof(transcodedBuf));
+		if (numDecodedSamples <= 0)
+			return;
+
+		speexDataLen = numDecodedSamples;
 		break;
 	}
 	case vct_speex:

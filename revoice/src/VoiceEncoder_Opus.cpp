@@ -197,6 +197,12 @@ int VoiceEncoder_Opus::Decompress(const char *pCompressed, int compressedBytes, 
 						break;
 
 					int nBytes = opus_decode(m_pDecoder, 0, 0, (opus_int16 *)pWritePos, FRAME_SIZE, 0);
+					if (nBytes <= 0)
+					{
+						// raw corrupted
+						return 0;
+					}
+
 					pWritePos += nBytes * 2;
 				}
 			}
@@ -223,6 +229,11 @@ int VoiceEncoder_Opus::Decompress(const char *pCompressed, int compressedBytes, 
 		}
 
 		int nBytes = opus_decode(m_pDecoder, (const unsigned char *)pReadPos, nPayloadSize, (opus_int16 *)pWritePos, FRAME_SIZE, 0);
+		if (nBytes <= 0)
+		{
+			// raw corrupted
+			return 0;
+		}
 
 		pReadPos += nPayloadSize;
 		pWritePos += nBytes * 2;
