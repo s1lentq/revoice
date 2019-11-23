@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-void SV_DropClient_hook(IRehldsHook_SV_DropClient *chain, IGameClient *cl, bool crash, const char *msg)
+void SV_DropClient(IRehldsHook_SV_DropClient *chain, IGameClient *cl, bool crash, const char *msg)
 {
 	CRevoicePlayer *plr = GetPlayerByClientPtr(cl);
 
@@ -9,7 +9,7 @@ void SV_DropClient_hook(IRehldsHook_SV_DropClient *chain, IGameClient *cl, bool 
 	chain->callNext(cl, crash, msg);
 }
 
-void CvarValue2_PreHook(const edict_t *pEnt, int requestID, const char *cvarName, const char *cvarValue)
+void CvarValue2_Pre(const edict_t *pEnt, int requestID, const char *cvarName, const char *cvarValue)
 {
 	CRevoicePlayer *plr = GetPlayerByEdict(pEnt);
 	if (plr->GetRequestId() != requestID) {
@@ -60,6 +60,7 @@ int TranscodeVoice(CRevoicePlayer *srcPlayer, const char *srcBuf, int srcBufLen,
 
 void SV_ParseVoiceData_emu(IGameClient *cl)
 {
+	UTIL_ServerPrintf("SV_ParseVoiceData_emu\n");
 	char chReceived[4096];
 	unsigned int nDataLength = g_RehldsFuncs->MSG_ReadShort();
 
@@ -178,6 +179,7 @@ void Rehlds_HandleNetCommand(IRehldsHook_HandleNetCommand *chain, IGameClient *c
 {
 	const int clc_voicedata = 8;
 	if (opcode == clc_voicedata) {
+		UTIL_ServerPrintf("HandleNetCommand\n");
 		SV_ParseVoiceData_emu(cl);
 		return;
 	}
@@ -185,7 +187,7 @@ void Rehlds_HandleNetCommand(IRehldsHook_HandleNetCommand *chain, IGameClient *c
 	chain->callNext(cl, opcode);
 }
 
-qboolean ClientConnect_PreHook(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128])
+qboolean ClientConnect_Pre(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128])
 {
 	CRevoicePlayer *plr = GetPlayerByEdict(pEntity);
 	plr->OnConnected();
@@ -193,14 +195,15 @@ qboolean ClientConnect_PreHook(edict_t *pEntity, const char *pszName, const char
 	RETURN_META_VALUE(MRES_IGNORED, TRUE);
 }
 
-void ServerActivate_PostHook(edict_t *pEdictList, int edictCount, int clientMax)
+void ServerActivate_Post(edict_t *pEdictList, int edictCount, int clientMax)
 {
 	Revoice_Exec_Config();
 	SET_META_RESULT(MRES_IGNORED);
 }
 
-void SV_WriteVoiceCodec_hooked(IRehldsHook_SV_WriteVoiceCodec *chain, sizebuf_t *sb)
+void SV_WriteVoiceCodec(IRehldsHook_SV_WriteVoiceCodec *chain, sizebuf_t *sb)
 {
+	UTIL_ServerPrintf("SV_WriteVoiceCodec\n");
 	IGameClient *cl = g_RehldsFuncs->GetHostClient();
 	CRevoicePlayer *plr = GetPlayerByClientPtr(cl);
 
@@ -248,18 +251,18 @@ bool Revoice_Load()
 
 bool Revoice_Main_Init()
 {
-	g_RehldsHookchains->SV_DropClient()->registerHook(&SV_DropClient_hook, HC_PRIORITY_DEFAULT + 1);
+	g_RehldsHookchains->SV_DropClient()->registerHook(&SV_DropClient, HC_PRIORITY_DEFAULT + 1);
 	g_RehldsHookchains->HandleNetCommand()->registerHook(&Rehlds_HandleNetCommand, HC_PRIORITY_DEFAULT + 1);
-	g_RehldsHookchains->SV_WriteVoiceCodec()->registerHook(&SV_WriteVoiceCodec_hooked, HC_PRIORITY_DEFAULT + 1);
+	g_RehldsHookchains->SV_WriteVoiceCodec()->registerHook(&SV_WriteVoiceCodec, HC_PRIORITY_DEFAULT + 1);
 
 	return true;
 }
 
-void Revoice_Main_DeInit()
+void Revoice_Main_Detach()
 {
-	g_RehldsHookchains->SV_DropClient()->unregisterHook(&SV_DropClient_hook);
+	g_RehldsHookchains->SV_DropClient()->unregisterHook(&SV_DropClient);
 	g_RehldsHookchains->HandleNetCommand()->unregisterHook(&Rehlds_HandleNetCommand);
-	g_RehldsHookchains->SV_WriteVoiceCodec()->unregisterHook(&SV_WriteVoiceCodec_hooked);
+	g_RehldsHookchains->SV_WriteVoiceCodec()->unregisterHook(&SV_WriteVoiceCodec);
 
-	Revoice_DeInit_Cvars();
+	Revoice_Detach_Cvars();
 }

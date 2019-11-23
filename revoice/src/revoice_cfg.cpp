@@ -56,7 +56,7 @@ void Revoice_Init_Cvars()
 	g_RehldsFuncs->AddCvarListener(g_cv_rev_default_codec.name, Revoice_Update_Players);
 }
 
-void Revoice_DeInit_Cvars()
+void Revoice_Detach_Cvars()
 {
 	g_RehldsFuncs->RemoveCvarListener(g_cv_rev_hltv_codec.name, Revoice_Update_Hltv);
 	g_RehldsFuncs->RemoveCvarListener(g_cv_rev_default_codec.name, Revoice_Update_Players);

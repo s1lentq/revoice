@@ -117,15 +117,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\dllapi.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine_api.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\h_export.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\meta_api.cpp">
       <Filter>src</Filter>
     </ClCompile>
