@@ -18,8 +18,8 @@ private:
 	int m_samplerate;
 	int m_bitrate;
 
-	uint16 m_nCurFrame;
-	uint16 m_nLastFrame;
+	uint16 m_nEncodeSeq;
+	uint16 m_nDecodeSeq;
 
 	bool m_PacketLossConcealment;
 
@@ -31,7 +31,7 @@ public:
 	virtual bool Init(int quality);
 	virtual void Release();
 	virtual bool ResetState();
-	virtual int Compress(const char *pUncompressedBytes, int nSamples, char *pCompressed, int maxCompressedBytes, bool bFinal);
+	virtual int Compress(const char *pUncompressedBytes, int nSamplesIn, char *pCompressed, int maxCompressedBytes, bool bFinal);
 	virtual int Decompress(const char *pCompressed, int compressedBytes, char *pUncompressed, int maxUncompressedBytes);
 
 	int GetNumQueuedEncodingSamples() const { return m_bufOverflowBytes.TellPut() / BYTES_PER_SAMPLE; }
