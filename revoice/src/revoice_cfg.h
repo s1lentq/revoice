@@ -10,7 +10,7 @@ struct REVCmds {
 void Revoice_Exec_Config();
 bool Revoice_Init_Config();
 void Revoice_Init_Cvars();
-void Revoice_DeInit_Cvars();
+void Revoice_Detach_Cvars();
 
 void Revoice_Cmds_Handler();
 
